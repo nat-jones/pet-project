@@ -1,21 +1,23 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import Routes from './Routes.js';
+import { createStore } from 'redux';
+import MasterReducer from './Reducers/MasterReducer';
+import { Provider } from 'react-redux';
+import { AppRegistry } from 'react-native';
 
-export default function App() {
+function App(props) {
+
+  const store = createStore(MasterReducer);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <>
+      <Provider store={store}>
+        < Routes />
+      </Provider>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+export default App;
+AppRegistry.registerComponent('App', () => App)
