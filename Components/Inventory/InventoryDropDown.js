@@ -1,108 +1,162 @@
 import React, { useRef, useState, useEffect } from "react";
-import { View, Animated, StyleSheet, Image, PanResponder } from 'react-native';
-import { Button, Text } from 'native-base';
-import { useSelector } from 'react-redux';
+import { View, Animated, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { Icon } from "native-base";
+import { useSelector } from "react-redux";
+import {
+  INVENTORY_POSITION_TOP,
+  INVENTORY_HEIGHT,
+  INVENTORY_WRAPPER_WIDTH,
+  INVENTORY_CARET_WIDTH,
+  INVENTORY_LIST_WIDTH,
+  INVENTORY_ITEM_WIDTH,
+  INVENTORY_ITEM_MARGIN
+} from '../../layoutConsts';
 
-import DraggableImage from './DraggableImage'
+import DraggableImage from "./DraggableImage";
 
 export default function InventoryDropDown(props) {
 
-    const [isVisible, setOverflow] = useState(false);
-    const [topOffset, setTopOffset] = useState(props.itemDropZone.y);
+  const [isVisible, setOverflow] = useState(false);
+  const [invListPosition, setInvListPosition] = useState(0);
 
-    const dropAnim = useRef(new Animated.Value(0)).current;
-    const DOGFOODPATH = require('../../assets/dogFood.png');
-    const DOGBONEPATH = require('../../assets/dogBone.png');
-    const TENNISBALLPATH = require('../../assets/tennisBall.png');
+  const scrollRef = useRef(null);
+  const DOGFOODPATH = require("../../assets/dogFood.png");
+  const DOGBONEPATH = require("../../assets/dogBone.png");
+  const TENNISBALLPATH = require("../../assets/tennisBall.png");
 
-    const food = useSelector(state => state.food);
+  const food = useSelector((state) => state.food);
 
-    const dropIn = () => {
-        Animated.timing(dropAnim, {
-            toValue: 150,
-            duration: 200,
-            useNativeDriver: false
-        }).start();
-        setOverflow(true);
-    };
-    const dropOut = () => {
-        Animated.timing(dropAnim, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: false
-        }).start();
-        setOverflow(false);
-    };
+  const scrollRight = () => {
+    scrollRef.current.scrollTo({ x: invListPosition + INVENTORY_LIST_WIDTH });
+    setInvListPosition(invListPosition + INVENTORY_LIST_WIDTH);
+  }
+  const scrollLeft = () => {
+    scrollRef.current.scrollTo({ x: invListPosition - INVENTORY_LIST_WIDTH });
+    setInvListPosition(invListPosition - INVENTORY_LIST_WIDTH);
+  }
 
-    return (
+  return (
+    <View
+      style={styles.inventoryWrapper}
+    >
+      <TouchableOpacity style={styles.button} onPress={scrollLeft}>
+        <Icon type='FontAwesome5' name='caret-left' style={styles.icon} />
+      </TouchableOpacity>
+      <View style={styles.inventoryList}>
+        <ScrollView
+          horizontal={true}
+          ref={scrollRef}
+          decelerationRate={0}
+          pagingEnabled
+          snapToAlignment={"center"}
+          scrollEnabled={false}
+          style={styles.scroll}
 
-        < View
-            style={{ width: "100%", zIndex: 2 }}
-            onLayout={event => console.log(event.nativeEvent.layout.y)}
         >
-            <Button title="Inventory" style={styles.wideButton} onPress={() => {
-                if (isVisible) {
+          <DraggableImage
+            imageSource={DOGFOODPATH}
+            value={food}
 
-                    dropOut();
-                }
-                else {
+            style={{ zIndex: 1 }}
+          />
+          <DraggableImage
+            imageSource={DOGFOODPATH}
+            value={food}
 
-                    dropIn();
-                }
+            style={{ zIndex: 1 }}
+          />
+          <DraggableImage
+            imageSource={DOGFOODPATH}
+            value={food}
 
-            }}>
-                <Text style={styles.buttonText}>INVENTORY</Text>
-            </Button>
-            <Animated.View style={
-                [styles.menuBox, {
-                    height: dropAnim,
-                    overflow: isVisible ? "visible" : "hidden",
-                }]} >
+            style={{ zIndex: 1 }}
+          />
 
-                <DraggableImage imageSource={DOGFOODPATH} value={food} itemDropZone={props.itemDropZone} />
+          <DraggableImage
+            imageSource={DOGBONEPATH}
+            value={1}
 
-                <DraggableImage imageSource={DOGBONEPATH} value={1} itemDropZone={props.itemDropZone} />
+            style={{ zIndex: 1 }}
+          />
 
-                <DraggableImage imageSource={TENNISBALLPATH} value={1} itemDropZone={props.itemDropZone} />
+          <DraggableImage
+            imageSource={DOGBONEPATH}
+            value={1}
 
-            </Animated.View>
+            style={{ zIndex: 1 }}
+          />
 
-        </View >
-    );
+          <DraggableImage
+            imageSource={DOGBONEPATH}
+            value={1}
+
+            style={{ zIndex: 1 }}
+          />
+
+          <DraggableImage
+            imageSource={TENNISBALLPATH}
+            value={1}
+
+            style={{ zIndex: 1 }}
+          />
+          <DraggableImage
+            imageSource={TENNISBALLPATH}
+            value={1}
+
+            style={{ zIndex: 1 }}
+          />
+          <DraggableImage
+            imageSource={TENNISBALLPATH}
+            value={1}
+
+            style={{ zIndex: 1 }}
+          />
+        </ScrollView>
+      </View>
+      <TouchableOpacity style={styles.button} onPress={scrollRight}>
+        <Icon type='FontAwesome5' name='caret-right' style={styles.icon} />
+      </TouchableOpacity>
+    </View>
+  );
 }
 
+
+
 const styles = StyleSheet.create({
-    menuBox: {
-        width: "100%",
-        borderTopRightRadius: 0,
-        borderTopLeftRadius: 0,
-        borderBottomRightRadius: 5,
-        borderBottomLeftRadius: 5,
-        display: "flex",
-        flexDirection: "row",
-        backgroundColor: "gold",
-        position: "absolute",
-        alignItems: "center",
-        justifyContent: "space-evenly",
-        top: 73,
-        zIndex: 1,
-        opacity: 1
-    },
-    wideButton: {
-        marginTop: "2%",
-        width: "100%",
-        height: 70,
-        backgroundColor: "gold",
-        alignItems: "center",
-        justifyContent: "center",
-        alignSelf: "center",
-        zIndex: 2
-    },
-    buttonText: {
-        fontSize: 20,
-        color: "#bf9700"
-    }
-})
-
-
-
+  inventoryWrapper: {
+    width: INVENTORY_WRAPPER_WIDTH,
+    height: INVENTORY_HEIGHT,
+    position: 'absolute',
+    top: INVENTORY_POSITION_TOP,
+    zIndex: 2,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: 'rgba(153, 130, 0, .5)',
+    borderColor: "#ffd700",
+    borderWidth: 2,
+    borderRadius: 5
+  },
+  inventoryList: {
+    flexDirection: 'row',
+    width: INVENTORY_LIST_WIDTH,
+    justifyContent: 'space-evenly',
+    overflow: 'visible',
+    zIndex: 3
+  },
+  button: {
+    width: INVENTORY_CARET_WIDTH,
+    borderRadius: 3,
+    height: INVENTORY_HEIGHT - 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2
+  },
+  icon: {
+    width: 'auto',
+    color: 'gold'
+  },
+  scroll: {
+    flex: 1,
+  }
+});

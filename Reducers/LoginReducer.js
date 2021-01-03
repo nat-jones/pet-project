@@ -1,15 +1,14 @@
-
 const LoginReducer = (state = null, action) => {
-    switch (action.type) {
-        case ("LOGIN"):
-            return action.userID;
+  switch (action.type) {
+    case "LOGIN":
+      return action.userID;
 
-        case ("LOGOUT"):
-            return null;
+    case "LOGOUT":
+      return null;
 
-        default:
-            return state;
-    }
-}
+    default:
+      return state;
+  }
+};
 
 export default LoginReducer;

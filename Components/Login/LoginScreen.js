@@ -1,107 +1,150 @@
-import React, { useState, useEffect } from 'react';
-import { Item, Input, Button, Text } from 'native-base';
+import React, { useState, useEffect } from "react";
+import { Item, Input, Button, Text } from "native-base";
 import { Actions } from "react-native-router-flux";
-import { View, StyleSheet } from 'react-native';
-import ForestBackground from '../Backgrounds/ForestBackground';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../../Actions/LoginActions';
-import { setAllAccumulators } from '../../Actions/AccumulatorActions';
-import { setAllBars } from '../../Actions/BarActions';
-import { setFood } from '../../Actions/FoodActions';
-import { firebase, loginWithUsernameAndPassword, getUserData } from "../../firebase";
+import {
+    View,
+    StyleSheet,
+    KeyboardAvoidingView,
+    ScrollView,
+} from "react-native";
+import ForestBackground from "../Backgrounds/ForestBackground";
+import { useDispatch } from "react-redux";
+import { login } from "../../Actions/LoginActions";
+import { setAllAccumulators } from "../../Actions/AccumulatorActions";
+import { setAllBars } from "../../Actions/BarActions";
+import { setFood } from "../../Actions/FoodActions";
+import { dispatchAllData } from './LoginFunctions';
+import {
+    firebase,
+    loginWithUsernameAndPassword,
+    getUserData,
+} from "../../firebase";
 
-//import { GoogleSignin } from '@react-native-community/google-signin';
-
-
-
-// async function onGoogleButtonPress() {
-//     // Get the users ID token
-//     const { idToken } = await GoogleSignin.signIn();
-
-//     // Create a Google credential with the token
-//     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-
-//     // Sign-in the user with the credential
-//     return auth().signInWithCredential(googleCredential);
-// }
-
+/* This component represents the login screen for returning users*/
 
 export default function LoginScreen(props) {
 
+
     const dispatch = useDispatch();
-    const [loggedIn, setLoggedIn] = useState(false);
+    const [loggedIn, setLoggedIn] = useState(false); //boolean to determine whether user is logged
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
-    // Set an initializing state whilst Firebase connects
-    const [initializing, setInitializing] = useState(false);
-    const goToHome = () => { Actions.home() };
 
+    const goToHome = () => {
+        Actions.home();
+    };
+
+    /* 
+    A function to be passed to the onAuthStateChanged event listener.
+    Will pull user data from firebase and call apropriate dispatch functions to load
+    it into global store
+    */
     const onAuthStateChanged = async (user) => {
         if (user !== null) {
             setLoggedIn(true);
-            dispatch(login(user.uid));
-            let userData = await getUserData(user.uid);
-            await setAllUserData(userData);
+            dispatchAllData(user);
         }
-        // Do other things
     };
 
-    const setAllUserData = async (data) => {
-        await dispatch(setAllAccumulators({
-            coins: data.coins,
-            xp: data.xp,
-            gems: data.gems
-        }));
-        await dispatch(setAllBars({
-            love: data.love,
-            cleanliness: data.cleanliness,
-            hunger: data.hunger,
-            exercise: data.exercise
-        }));
-        await dispatch(setFood(data.food));
-    }
+    const unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
 
+    // copies all user data into global store
+    // const dispatchUserData = async (data) => {
+    //     await dispatch(
+    //         setAllAccumulators({
+    //             coins: data.coins,
+    //             xp: data.xp,
+    //             gems: data.gems,
+    //         })
+    //     );
+    //     await dispatch(
+    //         setAllBars({
+    //             love: data.love,
+    //             cleanliness: data.cleanliness,
+    //             hunger: data.hunger,
+    //             exercise: data.exercise,
+    //             lastFed: data.lastFed,
+    //             lastCleaned: data.lastCleaned,
+    //             lastLoved: data.lastLoved,
+    //             lastExercised: data.lastExercised
+    //         })
+    //     );
+    //     await dispatch(setFood(data.food));
+    // };
+
+    /* 
+    attatches the onAuthStateChanged function to the appropriate listener
+    If were logged in, it will route to home
+    */
     useEffect(() => {
-
-        let unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
 
         if (loggedIn) {
             unsubscribe();
-            Actions.home();
+            Actions.main();
         }
-
-    });
+    }, [loggedIn]);
 
     return (
         <ForestBackground>
-            <View style={styles.loginWindow}>
-                <Text style={styles.header}>Login</Text>
-                <Item regular>
-                    <Input placeholder="Email" value={username} onChangeText={(e) => setUsername(e)} />
-                </Item>
-                <Item regular>
-                    <Input placeholder="Password" value={password} onChangeText={(e) => setPassword(e)} />
-                </Item>
-                <Item>
-                    <Button
-                        title="sign in"
-                        onPress={() => loginWithUsernameAndPassword(username, password)} >
 
-                        <Text>Login</Text>
-                    </Button>
-                </Item>
-                <Text style={styles.link} onPress={Actions.newAccount}>Create new account</Text>
-            </View>
+            <KeyboardAvoidingView
+                behavior="position"
+                style={styles.keyboardAvoidingView}
+            >
+
+                <ScrollView
+                    style={styles.formView}
+                    alwaysBounceHorizontal={false}
+                    alwaysBounceVertical={false}>
+
+                    <View style={styles.loginWindow}>
+                        <Text style={styles.header}>Login</Text>
+                        <Item regular style={styles.formItem}>
+                            <Input
+                                placeholder="Email"
+                                value={username}
+                                onChangeText={(e) => setUsername(e)}
+                            />
+                        </Item>
+                        <Item regular style={styles.formItem}>
+                            <Input
+                                placeholder="Password"
+                                value={password}
+                                onChangeText={(e) => setPassword(e)}
+                            />
+                        </Item>
+                        <Item style={styles.formItem}>
+                            <Button
+                                title="sign in"
+                                onPress={() => loginWithUsernameAndPassword(username, password)}
+                            >
+                                <Text>Login</Text>
+                            </Button>
+                        </Item>
+                        <Text style={[styles.link, styles.formItem]} onPress={() => {
+                            unsubscribe();
+                            Actions.newAccount();
+                        }}>
+                            Create new account
+                        </Text>
+                    </View>
+                </ScrollView>
+
+            </KeyboardAvoidingView>
         </ForestBackground>
     );
 }
 
 const styles = StyleSheet.create({
-    loginWindow: {
+    keyboardAvoidingView: {
         width: "90%",
-        opacity: .9,
         height: "40%",
+    },
+    loginWindow: {
+        width: "100%",
+        opacity: 0.9,
+        height: "100%",
         borderRadius: 10,
         backgroundColor: "white",
         justifyContent: "space-evenly",
@@ -109,17 +152,24 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         borderColor: "gold",
         padding: 10,
-        borderWidth: 3
+        borderWidth: 3,
+    },
+    formView: {
+        width: "100%",
+        height: "100%",
     },
     link: {
-        color: "blue"
+        color: "blue",
     },
     header: {
         color: "gold",
-        fontSize: 40
+        fontSize: 40,
     },
     error: {
-        color: "red"
+        color: "red",
+    },
+    formItem: {
+        marginTop: 10,
+        marginBottom: 10
     }
-
-})
+});

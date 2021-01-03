@@ -1,21 +1,18 @@
 const FoodReducer = (state = 0, action) => {
+  switch (action.type) {
+    case "ADD_FOOD":
+      return state + action.numAdded;
 
-    switch (action.type) {
+    case "USE_FOOD":
+      return state - 1;
 
-        case ("ADD_FOOD"):
-            return state + action.numAdded;
+    case "SET_FOOD":
 
-        case ("USE_FOOD"):
-            return state - 1;
+      return action.value;
 
-        case ("SET_FOOD"):
-            console.log(action.value);
-            return action.value
-
-        default:
-            return state;
-    };
+    default:
+      return state;
+  }
 };
 
 export default FoodReducer;
-
