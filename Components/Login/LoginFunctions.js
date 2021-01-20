@@ -5,6 +5,7 @@ import { login } from "../../Actions/LoginActions";
 import { setAllAccumulators } from "../../Actions/AccumulatorActions";
 import { setAllBars } from "../../Actions/BarActions";
 import { setFood } from "../../Actions/FoodActions";
+import { sponsorAnimal } from '../../Actions/SponsorableAnimalActions';
 import { getUserData } from '../../firebase';
 
 
@@ -32,6 +33,8 @@ export const dispatchUserData = async (data) => {
         })
     );
     await dispatch(setFood(data.food));
+
+    await dispatch(sponsorAnimal(data.sponsoredAnimalID));
 };
 
 export const dispatchAllData = async (user) => {

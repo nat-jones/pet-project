@@ -2,11 +2,14 @@ import React from 'react';
 import { View, TouchableOpacity, ScrollView, Image, Text, StyleSheet } from 'react-native';
 import { Icon } from 'native-base';
 import { updateSponsoredAnimal } from '../../firebase';
+import { sponsorAnimal } from '../../Actions/SponsorableAnimalActions';
+import { useDispatch } from 'react-redux';
 
 
 export default function SelectedAnimalInfo(props) {
 
     let imageSrc = { uri: props.imageSource }
+    const dispatch = useDispatch();
 
     return (
         <View style={styles.window}>
@@ -18,7 +21,12 @@ export default function SelectedAnimalInfo(props) {
             <ScrollView style={styles.scrollView} alwaysBounceHorizontal={false}>
                 <Text style={styles.description}>{props.description}</Text>
             </ScrollView>
-            <TouchableOpacity style={styles.button} onPress={() => updateSponsoredAnimal(props.id)}>
+            <TouchableOpacity style={styles.button} onPress={() => {
+                updateSponsoredAnimal(props.id);
+                dispatch(sponsorAnimal(props.id));
+            }
+
+            }>
                 <Text style={styles.buttonText}>
                     {'Sponsor ' + props.name}
                 </Text>
@@ -34,22 +42,23 @@ const styles = StyleSheet.create(
             alignItems: 'center',
             position: 'relative',
             width: '100%',
-            height: '100%'
+            height: '100%',
+            paddingHorizontal: 20
         },
         button: {
             width: 'auto',
-
             padding: 20,
             backgroundColor: 'gold',
             color: 'rgba(153, 130, 0, .5)',
             borderRadius: 10,
             justifyContent: 'center',
             alignItems: 'center',
-            height: 'auto'
+            height: 'auto',
+            margin: 20
         },
         buttonText: {
             fontSize: 20,
-            color: 'rgba(153, 130, 0, .5)'
+            color: 'black'
         },
         image: {
             width: 300,
@@ -73,12 +82,14 @@ const styles = StyleSheet.create(
             margin: 20
         },
         scrollView: {
-            height: 50,
-            borderWidth: 2
+            backgroundColor: 'gold',
+            borderRadius: 5,
+            padding: 10
         },
         description: {
-            color: 'gold',
-            fontSize: 20
+            color: 'black',
+            fontSize: 20,
+            textAlign: 'center'
         }
 
 

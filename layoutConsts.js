@@ -56,5 +56,40 @@ export const ANIMAL_PICTURE_MARGIN = ANIMAL_PICTURE_WIDTH / 4;
 export const ANIMAL_BIO_WIDTH = ANIMAL_INFO_WINDOW_WIDTH / 12 * 5;
 
 
+//Shop Page
+
+export const SHOP_WINDOW_WIDTH = width * .98;
+
+export const SIGN_TOP_MARGIN = height * .1;
+
+export const SIGN_BOTTOM_MARGIN = height * .01;
+
+export const SIGN_FOOTER_HEIGHT = height * .09;
+
+export const SHOP_BACKGROUND_HEIGHT = height - NAV_BAR_HEIGHT - SIGN_TOP_MARGIN - SIGN_BOTTOM_MARGIN;
+
+export const SIGN_HEIGHT = SHOP_BACKGROUND_HEIGHT * .3;
+
+export const SHELF_HEIGHT = height * .03;
+
+export const SHELF_DEPTH = SHELF_HEIGHT * 1;
+
+export const SHELF_WIDTH = SHOP_WINDOW_WIDTH * .95;
+
+export const SHELF_SPACING = height * .15;
+
+export const SHELF_WINDOW_HEIGHT = SHOP_BACKGROUND_HEIGHT - SIGN_HEIGHT - SIGN_FOOTER_HEIGHT;
+
+export const RECEIPT_HEADER_MARGIN_TOP = height * .2;
+
+export const RECEIPT_HEADER_HEIGHT = height * .1;
+
+export const SUMMARY_HEIGHT = height * .45;
+
+export const SUMMARY_WIDTH = width * .9;
+
+export const LINE_ITEM_HEIGHT = height * .05
+
+
 
 

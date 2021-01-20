@@ -4,6 +4,7 @@ import ShopScreen from './ShopScreen/ShopScreen';
 import AnimalInfoScreen from './AnimalInfoScreen/AnimalInfoScreen';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
+import { getUserData } from '../firebase';
 import ForestBackground from './Backgrounds/ForestBackground';
 import NavBar from './NavBar'
 
@@ -32,7 +33,9 @@ export default function MainView(props) {
     const scrollRef = useRef(null);
     const [activePage, setActivePage] = useState('home');
     const [userDidSwipe, setUserDidSwipe] = useState(false);
+    const [didLoad, setDidLoad] = useState(false);
     const shouldScroll = useSelector(store => store.shouldScroll);
+    const userID = useSelector(store => store.userID);
 
     const handleScroll = (event) => {
 

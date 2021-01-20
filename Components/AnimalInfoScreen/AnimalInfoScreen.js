@@ -3,66 +3,43 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { width, height, ANIMAL_INFO_WINDOW_HEIGHT, ANIMAL_INFO_WINDOW_WIDTH, ANIMAL_PICTURE_MARGIN } from '../../layoutConsts';
 import SelectedAnimalInfo from './SelectedAnimalInfo';
 import AnimalImage from './AnimalImage';
+import { getAllAnimalInfo } from '../../DogScraper';
+import { useDispatch, useSelector } from 'react-redux';
+import { setAllDogInfo } from '../../Actions/SponsorableAnimalActions';
 
 
 export default function AnimalInfoScreen(props) {
 
-    const axios = require('axios');
-    const cheerio = require('cheerio');
+    const dispatch = useDispatch();
+    const sponsorableAnimalsInfo = useSelector(state => state.sponsorableAnimals);
     const [dogs, setDogs] = useState([])
     const [isLoaded, setLoaded] = useState(false);
     const [selectedAnimal, setSelectedAnimal] = useState(null);
-    const parseAnimalInfo = (rawInfo) => {
-
-        const $ = cheerio.load(rawInfo);
-        const animals = [];
-
-    }
-    const getAllAnimalInfo = async () => {
-        const { data } = await axios.get('https://amigosdelosanimalespr.org/adoptable-dogs/');
-        const $ = cheerio.load(data);
 
 
-        const allDogs = $('.dog.dog')
-            .get()
-            .map(
-                (dog) => {
-                    const dogID = $(dog).find('.name a').attr('id');
-                    const dogName = $(dog).find('.name a').text();
-                    const dogImage = $(dog).find('.images img').attr('src');
-                    const rawDogDescription = $(dog).find('.description p').text();
-                    const parsedDogDescription = rawDogDescription.split('View full description')[0];
-                    const info = $(dog).find('.images ul').find('.pet-options li').text();
-                    console.log(info);
-                    return {
-                        id: dogID,
-                        name: dogName,
-                        src: dogImage,
-                        description: parsedDogDescription
-                    }
-                    //console.log(dogImage.text());
-                }
-            );
-        //console.log(dog);
-        setDogs(allDogs);
+    const loadPage = async () => {
+        let dogInfo = await (getAllAnimalInfo());
+        dispatch(setAllDogInfo(dogInfo));
         setLoaded(true);
-        //parseAnimalInfo(data);
+
     }
 
-    useEffect(() => { getAllAnimalInfo() }, [isLoaded])
+
+    useEffect(() => { loadPage() }, [isLoaded])
 
     return (
         <View style={styles.window}>
 
-
             <View style={styles.animalInfoView}>
-                {selectedAnimal != null ?
+                {isLoaded &&
+                    selectedAnimal != null ?
                     <SelectedAnimalInfo {...selectedAnimal} setSelectedAnimal={setSelectedAnimal} />
                     :
                     <ScrollView style={styles.scrollView} alwaysBounceHorizontal={false}>
-                        {dogs.map(
+                        {Object.keys(sponsorableAnimalsInfo.allDogInfo).map(
                             (e) => {
-                                return <AnimalImage setSelectedAnimal={setSelectedAnimal} imageSource={e.src} id={e.id} key={e.id} name={e.name} description={e.description} />
+                                let dogInfo = sponsorableAnimalsInfo.allDogInfo[e]
+                                return <AnimalImage setSelectedAnimal={setSelectedAnimal} imageSource={dogInfo.src} id={dogInfo.id} key={dogInfo.id} name={dogInfo.name} description={dogInfo.description} />
                             }
                         )}
                     </ScrollView>

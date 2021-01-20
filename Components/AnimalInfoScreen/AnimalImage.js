@@ -3,6 +3,7 @@ import { View, Image, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ANIMAL_BIO_WIDTH, ANIMAL_PICTURE_MARGIN, ANIMAL_PICTURE_WIDTH } from '../../layoutConsts';
 
 
+
 export default function AnimalImage(props) {
 
 
@@ -51,15 +52,19 @@ const styles = StyleSheet.create(
         },
         textContainer: {
             width: ANIMAL_BIO_WIDTH,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            backgroundColor: 'gold',
+            padding: 5,
+            borderRadius: 5
         },
         text: {
-            color: 'gold',
+            color: 'black',
         },
         bio: {
             fontSize: 20
         },
         name: {
+            color: 'gold',
             fontSize: 30
         }
     }

@@ -1,13 +1,14 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Image, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Icon } from "native-base";
 import { Actions } from "react-native-router-flux";
 import { NAV_BAR_HEIGHT } from '../layoutConsts';
+import { useSelector } from 'react-redux';
+import SponsorableAnimalReducer from '../Reducers/SponsorableAnimalReducer';
 
 const windowWidth = Dimensions.get('window').width;
 const passiveOptionWidth = windowWidth * .18;
 const activeOptionWidth = windowWidth * .28;
-console.log(windowWidth);
 
 
 export default function NavBar(props) {
@@ -21,17 +22,29 @@ export default function NavBar(props) {
     };
 
     const [lastExpanded, setLastExpanded] = useState('home');
+    const dogInfo = useSelector(state => state.sponsorableAnimals);
+
+    const [dogImage, setDogImage] = useState(false);
+
+
 
     useEffect(() => {
         if (props.activePage !== lastExpanded) {
             changePage(props.activePage)
         }
-    })
+    }, [props.activePage]);
+
+    useEffect(() => {
+        const selectedDog = dogInfo.id;
+        console.log(selectedDog);
+        if (selectedDog && dogInfo.allDogInfo[selectedDog]) {
+            setDogImage(dogInfo.allDogInfo[selectedDog].src);
+        }
+    }, [dogInfo])
 
     const iconStyle = (page) => page === props.activePage ? styles.activeIcon : styles.passiveIcon
 
     const changePage = async (newPage) => {
-        console.log('changePage(' + newPage + ')');
         if (newPage === lastExpanded) {
             return;
         }
@@ -68,12 +81,13 @@ export default function NavBar(props) {
                     style={[styles.barOption, { width: anims.pet }]}
 
                 >
-
-                    <Icon
-                        type="MaterialCommunityIcons"
-                        name="dog"
-                        style={iconStyle('pet')}
-                    />
+                    {dogImage ? <Image source={{ uri: dogImage }} style={[styles.barIcon, styles.dogImage]} /> :
+                        <Icon
+                            type="MaterialCommunityIcons"
+                            name="dog"
+                            style={[styles.barIcon, iconStyle('pet')]}
+                        />
+                    }
 
                 </Animated.View>
             </TouchableWithoutFeedback>
@@ -112,7 +126,7 @@ export default function NavBar(props) {
                 >
                     <Icon
                         type="FontAwesome5"
-                        name="user-friends"
+                        name="clinic-medical"
                         style={iconStyle('friends')}
                     />
                 </Animated.View>
@@ -158,6 +172,16 @@ const styles = StyleSheet.create(
         activeIcon: {
             color: '#ffec80',
             marginTop: 20
+        },
+        barIcon: {
+            marginTop: 20,
+            width: 40,
+            height: 40
+        },
+        dogImage: {
+            borderRadius: 20,
+            borderWidth: 2,
+            borderColor: '#ffec80'
         }
     }
 )

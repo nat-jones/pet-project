@@ -1,20 +1,22 @@
 import LoginReducer from "./LoginReducer";
 import AccumulatorReducer from "./AccumulatorReducer";
-import FoodReducer from "./FoodReducer";
+import InventoryReducer from "./InventoryReducer";
 import BarReducer from "./BarReducer";
 import AnimalLocationReducer from './AnimalLocationReducer';
 import { combineReducers } from "redux";
 import ScrollReducer from "./ScrollReducer";
-import SponsoredAnimalReducer from "./SponsoredAnimalReducer";
+import SponsorableAnimalReducer from "./SponsorableAnimalReducer";
+import ShopReducer from './ShopReducer';
 
 const MasterReducer = combineReducers({
   userID: LoginReducer,
   accumulators: AccumulatorReducer,
-  food: FoodReducer,
+  inventory: InventoryReducer,
   bars: BarReducer,
   animalLocation: AnimalLocationReducer,
   shouldScroll: ScrollReducer,
-  sponsoredAnimal: SponsoredAnimalReducer
+  sponsorableAnimals: SponsorableAnimalReducer,
+  cart: ShopReducer
 });
 
 export default MasterReducer;
