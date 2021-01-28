@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ImageBackground, StyleSheet, Dimensions } from "react-native";
 
 const forestImage = require("../../assets/homescreenBackground.jpg");
 const windowDims = Dimensions.get('window')
 
 export default function ForestBackground(props) {
+
+
   return (
     <ImageBackground source={forestImage} style={styles.root}>
       {props.children}

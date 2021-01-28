@@ -7,13 +7,15 @@ const MAX_BAR_WIDTH = Dimensions.get('window').width / 5 * 2;
 export default function AnimalVitalsBar(props) {
   let barColor = 'green';
 
-  if (props.value < 25) {
+  if (props.value < 9 || props.value > 91) {
     barColor = "red";
-  } else if (props.value < 50) {
+  } else if (props.value < 17 || props.value > 83) {
     barColor = "orange";
-  } else if (props.value < 75) {
+  } else if (props.value < 25 || props.value > 75) {
     barColor = "yellow";
   }
+
+
 
   const barGrow = useRef(new Animated.Value(0)).current;
 
@@ -28,7 +30,7 @@ export default function AnimalVitalsBar(props) {
   return (
     <View style={styles.barView}>
       <View style={styles.fullBar}>
-        {props.icon}
+
         <Animated.View
           style={[
             styles.partialBar,
@@ -38,7 +40,11 @@ export default function AnimalVitalsBar(props) {
             },
           ]}
         />
+        <View style={styles.sweetSpot}>
+          {props.icon}
+        </View>
       </View>
+
     </View>
   );
 }
@@ -49,9 +55,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10,
     marginBottom: 10,
+    alignItems: 'center',
     justifyContent: "space-between",
     paddingLeft: 15,
-    paddingRight: 15
+    paddingRight: 15,
+    height: 25
   },
   barCategory: {
     width: 100,
@@ -62,6 +70,7 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   fullBar: {
+    height: 22,
     borderColor: "#ffd700",
     borderWidth: 1,
     width: MAX_BAR_WIDTH + 2,
@@ -73,4 +82,16 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     height: 20,
   },
+  sweetSpot: {
+    height: 24,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: 'gold',
+    position: 'absolute',
+    left: MAX_BAR_WIDTH * .25,
+    top: -2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: MAX_BAR_WIDTH * .5
+  }
 });

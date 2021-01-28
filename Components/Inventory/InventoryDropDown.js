@@ -12,7 +12,8 @@ import {
   INVENTORY_ITEM_MARGIN
 } from '../../layoutConsts';
 
-import DraggableImage from "./DraggableImage";
+import InventoryImage from "./InventoryImage";
+import { SHOP_ITEM_INFO } from "../../shopItemInfo";
 
 export default function InventoryDropDown(props) {
 
@@ -24,7 +25,7 @@ export default function InventoryDropDown(props) {
   const DOGBONEPATH = require("../../assets/dogBone.png");
   const TENNISBALLPATH = require("../../assets/tennisBall.png");
 
-  const food = useSelector((state) => state.food);
+  const inventory = useSelector((state) => state.inventory);
 
   const scrollRight = () => {
     scrollRef.current.scrollTo({ x: invListPosition + INVENTORY_LIST_WIDTH });
@@ -53,64 +54,14 @@ export default function InventoryDropDown(props) {
           style={styles.scroll}
 
         >
-          <DraggableImage
-            imageSource={DOGFOODPATH}
-            value={food}
-
-            style={{ zIndex: 1 }}
-          />
-          <DraggableImage
-            imageSource={DOGFOODPATH}
-            value={food}
-
-            style={{ zIndex: 1 }}
-          />
-          <DraggableImage
-            imageSource={DOGFOODPATH}
-            value={food}
-
-            style={{ zIndex: 1 }}
-          />
-
-          <DraggableImage
-            imageSource={DOGBONEPATH}
-            value={1}
-
-            style={{ zIndex: 1 }}
-          />
-
-          <DraggableImage
-            imageSource={DOGBONEPATH}
-            value={1}
-
-            style={{ zIndex: 1 }}
-          />
-
-          <DraggableImage
-            imageSource={DOGBONEPATH}
-            value={1}
-
-            style={{ zIndex: 1 }}
-          />
-
-          <DraggableImage
-            imageSource={TENNISBALLPATH}
-            value={1}
-
-            style={{ zIndex: 1 }}
-          />
-          <DraggableImage
-            imageSource={TENNISBALLPATH}
-            value={1}
-
-            style={{ zIndex: 1 }}
-          />
-          <DraggableImage
-            imageSource={TENNISBALLPATH}
-            value={1}
-
-            style={{ zIndex: 1 }}
-          />
+          {Object.keys(SHOP_ITEM_INFO).map(
+            (e) => {
+              let inventoryItem = { ...SHOP_ITEM_INFO[e] }
+              inventoryItem.value = inventory[inventoryItem.id];
+              inventoryItem['key'] = inventoryItem.id;
+              return <InventoryImage {...inventoryItem} />
+            }
+          )}
         </ScrollView>
       </View>
       <TouchableOpacity style={styles.button} onPress={scrollRight}>
@@ -135,7 +86,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(153, 130, 0, .5)',
     borderColor: "#ffd700",
     borderWidth: 2,
-    borderRadius: 5
+    borderRadius: 5,
+    overflow: 'visible'
   },
   inventoryList: {
     flexDirection: 'row',
@@ -157,6 +109,6 @@ const styles = StyleSheet.create({
     color: 'gold'
   },
   scroll: {
-    flex: 1,
+    flex: 1
   }
 });

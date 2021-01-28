@@ -4,9 +4,10 @@ import InventoryReducer from "./InventoryReducer";
 import BarReducer from "./BarReducer";
 import AnimalLocationReducer from './AnimalLocationReducer';
 import { combineReducers } from "redux";
-import ScrollReducer from "./ScrollReducer";
+import DragReducer from "./DragReducer";
 import SponsorableAnimalReducer from "./SponsorableAnimalReducer";
 import ShopReducer from './ShopReducer';
+import CareerReducer from "./CareerReducer";
 
 const MasterReducer = combineReducers({
   userID: LoginReducer,
@@ -14,9 +15,10 @@ const MasterReducer = combineReducers({
   inventory: InventoryReducer,
   bars: BarReducer,
   animalLocation: AnimalLocationReducer,
-  shouldScroll: ScrollReducer,
+  drag: DragReducer,
   sponsorableAnimals: SponsorableAnimalReducer,
-  cart: ShopReducer
+  cart: ShopReducer,
+  career: CareerReducer
 });
 
 export default MasterReducer;

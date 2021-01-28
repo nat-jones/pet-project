@@ -13,7 +13,6 @@ export default function Consumable(props) {
     const dispatch = useDispatch();
 
     const dispatchToCart = () => {
-        console.log('reached')
         dispatch(addToCart(props.id, quantity));
         setQuantity(0);
         setDidPress(false);
@@ -68,6 +67,7 @@ export default function Consumable(props) {
             <View style={styles.priceTag}>
                 <View style={styles.nail} />
                 <Text style={styles.price}>{props.price}</Text>
+                <Icon type='FontAwesome5' name='money-bill-wave' style={styles.moneyIcon}></Icon>
                 <View style={styles.nail} />
             </View>
         </View>
@@ -169,6 +169,8 @@ const styles = StyleSheet.create(
         },
         price: {
             fontSize: 20,
+            fontFamily: 'Didot-Italic',
+            fontWeight: '900',
         },
         priceTag: {
             height: SHELF_HEIGHT - 5,
@@ -179,6 +181,10 @@ const styles = StyleSheet.create(
             alignItems: 'center',
             flexDirection: 'row',
             paddingHorizontal: 5
+        },
+        moneyIcon: {
+            fontSize: 10,
+            color: 'green'
         },
         nail: {
             height: SHELF_HEIGHT - 20,

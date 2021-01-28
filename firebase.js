@@ -88,6 +88,30 @@ export const createNewAccountWithUsernameAndPassword = async (username, password
     });
 };
 
+export const updateInventory = async () => {
+
+  let uid = Store.getState().userID;
+  let inventory = Store.getState().inventory;
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(inventory);
+}
+
+export const purchaseInventory = async (cartCost) => {
+
+  let uid = Store.getState().userID;
+  let inventory = Store.getState().inventory;
+  let coins = Store.getState().accumulators.coins;
+
+  let newCoins = coins - cartCost;
+  let update = { ...inventory, coins: coins };
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(update);
+}
+
 export const updateBars = async (barNames) => {
 
   let uid = Store.getState().userID;
@@ -142,6 +166,19 @@ export const updateSponsoredAnimal = async (animalID) => {
   let updateObject = {
     sponsoredAnimalID: animalID
   }
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const updateStartedShift = async (shiftStart, shiftType) => {
+  let uid = Store.getState().userID;
+  let updateObject = {
+    lastShiftStart: shiftStart,
+    lastShiftType: shiftType
+  }
+  console.log(updateObject);
   await db
     .collection('Users')
     .doc(uid)

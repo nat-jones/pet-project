@@ -7,3 +7,18 @@ export const setAnimalLocation = (location) => {
         }
     )
 }
+
+export const showAnimal = () => {
+    return (
+        {
+            type: 'SHOW_ANIMAL'
+        }
+    )
+};
+
+export const hideAnimal = () => {
+
+    return ({
+        type: 'HIDE_ANIMAL'
+    });
+}

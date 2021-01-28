@@ -1,12 +1,15 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+
 import Store from '../../store';
-import { login } from "../../Actions/LoginActions";
 import { setAllAccumulators } from "../../Actions/AccumulatorActions";
 import { setAllBars } from "../../Actions/BarActions";
-import { setFood } from "../../Actions/FoodActions";
+import { setAllCareerInfo } from "../../Actions/CareerActions";
+import { setInventory, setItem } from "../../Actions/InventoryActions";
 import { sponsorAnimal } from '../../Actions/SponsorableAnimalActions';
+import { getAllAnimalInfo } from '../../DogScraper';
 import { getUserData } from '../../firebase';
+import { setAllDogInfo } from '../../Actions/SponsorableAnimalActions';
+import { SHOP_ITEM_INFO } from '../../shopItemInfo';
+import { database } from 'firebase';
 
 
 const dispatch = Store.dispatch;
@@ -32,14 +35,30 @@ export const dispatchUserData = async (data) => {
             lastExercised: data.lastExercised
         })
     );
-    await dispatch(setFood(data.food));
+    let inventory = Object.keys(SHOP_ITEM_INFO).reduce(
+        (acc, e) => {
+
+            acc[e] = data[e];
+            return acc;
+        }, {}
+    );
+
+
+    await dispatch(setInventory(inventory));
 
     await dispatch(sponsorAnimal(data.sponsoredAnimalID));
+
+    await dispatch(setAllCareerInfo({
+        careerID: data.careerID,
+        lastShiftStart: data.lastShiftStart
+    }
+    ));
 };
 
-export const dispatchAllData = async (user) => {
+export const dispatchAllData = async (uid) => {
 
-    dispatch(login(user.uid));
-    let userData = await getUserData(user.uid);
+    let userData = await getUserData(uid);
     await dispatchUserData(userData);
+    let dogInfo = await (getAllAnimalInfo());
+    await dispatch(setAllDogInfo(dogInfo));
 }

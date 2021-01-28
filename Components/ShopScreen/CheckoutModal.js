@@ -15,6 +15,9 @@ import {
 import { SHOP_ITEM_INFO } from '../../shopItemInfo';
 import { useAccumulator } from '../../Actions/AccumulatorActions';
 import SummaryLineItem from './SummaryLineItem';
+import { addCartload } from '../../Actions/InventoryActions';
+import { purchaseInventory } from '../../firebase';
+import { clearCart } from '../../Actions/ShopActions';
 
 
 export default function CheckoutModal(props) {
@@ -22,6 +25,7 @@ export default function CheckoutModal(props) {
 
     const shoppingCart = useSelector(state => state.cart);
     const coins = useSelector(state => state.accumulators.coins);
+    const dispatch = useDispatch();
 
     const getItemsInCart = () => {
         let items = Object.keys(shoppingCart);
@@ -49,9 +53,16 @@ export default function CheckoutModal(props) {
         return cartCost;
     }
 
-    const purchase = () => {
-        if (coins >= getCartCost()) {
+    const purchase = async () => {
 
+        let cartCost = getCartCost();
+
+        if (coins >= cartCost) {
+            await dispatch(useAccumulator(cartCost, 'coins'));
+            await dispatch(addCartload(shoppingCart));
+            await purchaseInventory(cartCost);
+            await dispatch(clearCart());
+            props.closeModal();
         }
 
     }
@@ -68,7 +79,7 @@ export default function CheckoutModal(props) {
 
                             {getItemsInCart().map(
                                 (e) => {
-                                    return <SummaryLineItem {...e} />
+                                    return <SummaryLineItem {...e} key={e.id} />
                                 }
                             )}
                         </ScrollView>

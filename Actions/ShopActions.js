@@ -1,7 +1,6 @@
 
 export const addToCart = (itemID, quantity) => {
 
-    console.log('reachedAction')
     return {
         type: 'ADD_TO_CART',
         itemID: itemID,

@@ -50,10 +50,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     fontSize: 20,
-    position: "absolute",
-    zIndex: 2,
     color: "#ffd700",
-    left: 65
   },
   stackedBars: {
     width: '50%',

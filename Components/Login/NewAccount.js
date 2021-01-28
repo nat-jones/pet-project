@@ -6,7 +6,7 @@ import { Item, Input, Button, Text } from "native-base";
 import { useDispatch } from "react-redux";
 import { setAllAccumulators } from "../../Actions/AccumulatorActions";
 import { setAllBars } from "../../Actions/BarActions";
-import { setFood } from "../../Actions/FoodActions";
+import { setItem } from "../../Actions/InventoryActions";
 import { login } from "../../Actions/LoginActions";
 import { createNewAccountWithUsernameAndPassword, setNewUserData, getUserData, firebase } from "../../firebase";
 
@@ -21,7 +21,6 @@ export default function NewAccount(props) {
 
   const onAuthStateChanged = async (user) => {
     if (user !== null) {
-      console.log(user.uid)
       await setNewUserData(user.uid);
       await dispatch(login(user.uid));
       let userData = await getUserData(user.uid);
@@ -48,7 +47,7 @@ export default function NewAccount(props) {
         exercise: data.exercise,
       })
     );
-    await dispatch(setFood(data.food));
+    await dispatch(setItem('dogFood', data.food));
   };
 
   useEffect(() => {

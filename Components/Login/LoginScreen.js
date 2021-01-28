@@ -9,11 +9,8 @@ import {
 } from "react-native";
 import ForestBackground from "../Backgrounds/ForestBackground";
 import { useDispatch } from "react-redux";
-import { login } from "../../Actions/LoginActions";
-import { setAllAccumulators } from "../../Actions/AccumulatorActions";
-import { setAllBars } from "../../Actions/BarActions";
-import { setFood } from "../../Actions/FoodActions";
 import { dispatchAllData } from './LoginFunctions';
+import { login } from '../../Actions/LoginActions';
 import {
     firebase,
     loginWithUsernameAndPassword,
@@ -43,45 +40,17 @@ export default function LoginScreen(props) {
     const onAuthStateChanged = async (user) => {
         if (user !== null) {
             setLoggedIn(true);
-            dispatchAllData(user);
+            dispatch(login(user.uid));
         }
     };
 
     const unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
 
-    // copies all user data into global store
-    // const dispatchUserData = async (data) => {
-    //     await dispatch(
-    //         setAllAccumulators({
-    //             coins: data.coins,
-    //             xp: data.xp,
-    //             gems: data.gems,
-    //         })
-    //     );
-    //     await dispatch(
-    //         setAllBars({
-    //             love: data.love,
-    //             cleanliness: data.cleanliness,
-    //             hunger: data.hunger,
-    //             exercise: data.exercise,
-    //             lastFed: data.lastFed,
-    //             lastCleaned: data.lastCleaned,
-    //             lastLoved: data.lastLoved,
-    //             lastExercised: data.lastExercised
-    //         })
-    //     );
-    //     await dispatch(setFood(data.food));
-    // };
-
-    /* 
-    attatches the onAuthStateChanged function to the appropriate listener
-    If were logged in, it will route to home
-    */
     useEffect(() => {
 
         if (loggedIn) {
             unsubscribe();
-            Actions.main();
+            Actions.loading();
         }
     }, [loggedIn]);
 

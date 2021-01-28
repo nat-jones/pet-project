@@ -29,7 +29,7 @@ const ShopReducer = (state = emptyCart, action) => {
             newState[key] = 0;
             return newState;
 
-        case 'clearCart':
+        case 'CLEAR_CART':
 
             return emptyCart;
 

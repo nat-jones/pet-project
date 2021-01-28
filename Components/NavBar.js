@@ -5,6 +5,7 @@ import { Actions } from "react-native-router-flux";
 import { NAV_BAR_HEIGHT } from '../layoutConsts';
 import { useSelector } from 'react-redux';
 import SponsorableAnimalReducer from '../Reducers/SponsorableAnimalReducer';
+import { firebase } from '../firebase';
 
 const windowWidth = Dimensions.get('window').width;
 const passiveOptionWidth = windowWidth * .18;
@@ -17,8 +18,8 @@ export default function NavBar(props) {
         home: useRef(new Animated.Value(activeOptionWidth)).current,
         pet: useRef(new Animated.Value(passiveOptionWidth)).current,
         shop: useRef(new Animated.Value(passiveOptionWidth)).current,
-        friends: useRef(new Animated.Value(passiveOptionWidth)).current,
-        games: useRef(new Animated.Value(passiveOptionWidth)).current,
+        vet: useRef(new Animated.Value(passiveOptionWidth)).current,
+        career: useRef(new Animated.Value(passiveOptionWidth)).current,
     };
 
     const [lastExpanded, setLastExpanded] = useState('home');
@@ -36,7 +37,6 @@ export default function NavBar(props) {
 
     useEffect(() => {
         const selectedDog = dogInfo.id;
-        console.log(selectedDog);
         if (selectedDog && dogInfo.allDogInfo[selectedDog]) {
             setDogImage(dogInfo.allDogInfo[selectedDog].src);
         }
@@ -92,12 +92,12 @@ export default function NavBar(props) {
                 </Animated.View>
             </TouchableWithoutFeedback>
 
-            <TouchableWithoutFeedback onPress={() => changePage('games')}>
+            <TouchableWithoutFeedback onPress={() => changePage('career')}>
                 <Animated.View
-                    style={[styles.barOption, { width: anims.games }]}
+                    style={[styles.barOption, { width: anims.career }]}
 
                 >
-                    <Icon type="FontAwesome5" name="dice" style={iconStyle('games')} />
+                    <Icon type="FontAwesome5" name="user-clock" style={iconStyle('career')} />
 
                 </Animated.View>
             </TouchableWithoutFeedback>
@@ -112,22 +112,22 @@ export default function NavBar(props) {
                 <Animated.View
                     style={[styles.barOption, { width: anims.shop }]}
                 >
-                    <Icon type="FontAwesome5" name="coins" style={iconStyle('shop')} />
+                    <Icon type="FontAwesome5" name="shopping-cart" style={iconStyle('shop')} />
 
                 </Animated.View>
             </TouchableWithoutFeedback>
             <TouchableWithoutFeedback onPress={() => {
-                changePage('friends')
+                changePage('vet');
 
             }
             }>
                 <Animated.View
-                    style={[styles.barOption, { width: anims.friends }]}
+                    style={[styles.barOption, { width: anims.vet }]}
                 >
                     <Icon
                         type="FontAwesome5"
                         name="clinic-medical"
-                        style={iconStyle('friends')}
+                        style={iconStyle('vet')}
                     />
                 </Animated.View>
             </TouchableWithoutFeedback>

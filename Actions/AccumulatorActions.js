@@ -13,8 +13,8 @@ export const addAccumulator = (numAdded, accumulator) => {
 export const useAccumulator = (numSpent, accumulator) => {
   return {
     type: "USE_ACCUMULATOR",
-    accumulator,
-    numSpent,
+    accumulator: accumulator,
+    numSpent: numSpent,
   };
 };
 

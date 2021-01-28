@@ -3,13 +3,14 @@ const AccumulatorReducer = (
   action
 ) => {
   let key = action.accumulator;
-
+  let newState = { ...state };
   switch (action.type) {
     case "ADD_ACCUMULATOR":
       return { ...state, key: state.key + action.numAdded };
 
     case "USE_ACCUMULATOR":
-      return { ...state, key: state.key - action.numSpent };
+      newState[key] -= action.numSpent;
+      return newState;
 
     case "SET_ACCUMULATOR":
       return { ...state, key: action.value };

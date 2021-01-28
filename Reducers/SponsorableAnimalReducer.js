@@ -8,7 +8,6 @@ const SponsorableAnimalReducer = (state = {
     switch (action.type) {
 
         case 'SPONSOR_ANIMAL':
-            console.log(action.value)
             return { ...state, id: action.value };
 
         case 'SET_ALL_DOG_INFO':

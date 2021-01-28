@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, View, Image, Dimensions } from "react-native";
 import AnimalVitalsWindow from "./AnimalVitalsWindow";
 import HomeTopBar from "./HomeTopBar";
@@ -9,33 +9,23 @@ import { useSelector, useDispatch } from "react-redux";
 import { setAnimalLocation } from '../../Actions/AnimalLocationActions';
 import OverlayContainer from '../Containers/OverlayContainer';
 import { ANIMAL_POSITION_BOTTOM, ANIMAL_HEIGHT, width, height } from '../../layoutConsts';
+import DraggableImage from "../Inventory/DraggableImage";
 
 const windowDims = Dimensions.get('window')
 
 
 function HomeScreenBackground(props) {
-  const userID = useSelector((state) => state.userID);
-  const store = useSelector((state) => state);
+
   const testAnimal = require("../../assets/testAnimal.png");
-  const animalRef = useRef();
 
   const dispatch = useDispatch();
-  const xp = useSelector((state) => state.accumulators.xp);
-  const [didLoad, setLoaded] = useState(true);
+  const showAnimal = useSelector(state => state.animalLocation.show);
 
-  useEffect(() => {
-    if (animalRef.current) {
-      console.log(Object.keys(animalRef.current));
-    }
-  });
 
-  if (!didLoad) {
-    return <TestLoadingScreen />;
-  }
+
   return (
 
     <View style={styles.homeScreenView} >
-      <HomeTopBar value={200} />
       <View
         style={styles.animalImageView}
         onLayout={(event) => {
@@ -52,13 +42,13 @@ function HomeScreenBackground(props) {
         }}
       >
         <Image
-          source={testAnimal}
+          source={require('../../assets/ScottishTerrier.png')}
           key={"animalImage"}
-          style={styles.animalImage}
+          style={[styles.animalImage, { opacity: (showAnimal ? 1 : .5) }]}
         />
       </View>
       <AnimalVitalsWindow />
-
+      <InventoryDropDown />
       <StatusBar style="auto" />
 
     </View>
@@ -69,7 +59,7 @@ function HomeScreenBackground(props) {
 
 export default function HomeScreen() {
   return (
-    <OverlayContainer behind={<HomeScreenBackground />} front={<InventoryDropDown />} />
+    <OverlayContainer behind={<HomeScreenBackground />} front={<DraggableImage />} />
 
   );
 }
