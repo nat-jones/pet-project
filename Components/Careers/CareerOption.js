@@ -38,9 +38,17 @@ export default function CareerOption(props) {
                 <Text style={[styles.font, styles.barStat]}>{props.description}</Text>
             </ScrollView> */}
             <View style={styles.barStatsWrapper}>
-                {Object.keys(props.barVals).map(
+                {/*Object.keys(props.barVals).map(
                     (e) => {
-                        let icons = new Array(props.barVals[e]).fill(<Icon type='FontAwesome' name='star' style={[styles.barStat, styles.barStatIcon]} />);
+                        let icons = new Array(
+                            props.barVals[e]
+                        ).fill(
+                            <Icon
+                                type='FontAwesome'
+                                name='star'
+                                style={[styles.barStat, styles.barStatIcon]}
+                                key={} />
+                        );
                         return (
                             <View style={styles.barStatLine}>
                                 <View style={styles.barStatTextWrapper}>
@@ -51,7 +59,7 @@ export default function CareerOption(props) {
                                 </View>
                             </View>);
                     }
-                )}
+                )*/}
             </View>
             <View>
                 <TouchableOpacity style={[styles.button]} onPress={() => dispatch(setCareer(props.id))}>

@@ -1,21 +1,39 @@
-import { Actions } from "react-native-router-flux";
-
-const HUNGER_DEPLETION_MULTIPLIER = 0.0000011574; //will drop 50% in 24 hours
-const CLEANLINESS_DEPLETION_MULTIPLIER = 0.0000005787; //will drop 25% in 24 hours
-const EXERCISE_DEPLETION_MULTIPLIER = 0.0000011574; //will drop 50% in 24 hours
-const LOVE_DEPLETION_MULTIPLIER = 0.0000011574; //will drop 50% in 24 hours
+import { depletionRates } from '../BarConsts'
 
 const BarReducer = (
   state = {
-    love: null,
-    cleanliness: null,
-    hunger: null,
-    exercise: null,
+    love: {
+      value: null,
+      lastCared: null,
+      starPoints: null
+    },
+    cleanliness: {
+      value: null,
+      lastCared: null,
+      starPoints: null
+    },
+    hunger: {
+      value: null,
+      lastCared: null,
+      starPoints: null
+    },
+    exercise: {
+      value: null,
+      lastCared: null,
+      starPoints: null
+    },
   },
   action
 ) => {
-  let newState = { ...state };
+  let newState = {
+    love: { ...state.love },
+    cleanliness: { ...state.cleanliness },
+    hunger: { ...state.hunger },
+    exercise: { ...state.exercise }
+  };
+
   switch (action.type) {
+
     case "SET_BAR":
       let category = action.category;
 
@@ -34,24 +52,52 @@ const BarReducer = (
       let lastExercised = action.values.lastExercised ? action.values.lastExercised : etime;
 
       let newValues = {
-        love: Math.max(action.values.love - (etime - lastLoved) * LOVE_DEPLETION_MULTIPLIER, 0),
-        hunger: Math.max(action.values.hunger - (etime - lastFed) * HUNGER_DEPLETION_MULTIPLIER, 0),
-        exercise: Math.max(action.values.exercise - (etime - lastExercised) * EXERCISE_DEPLETION_MULTIPLIER, 0),
-        cleanliness: Math.max(action.values.cleanliness - (etime - lastCleaned) * CLEANLINESS_DEPLETION_MULTIPLIER, 0)
+        love: {
+          ...state.love,
+          value: action.values.love,
+          lastCared: lastLoved
+        },
+        hunger: {
+          ...state.hunger,
+          value: action.values.hunger,
+          lastCared: lastFed,
+        },
+        exercise:
+        {
+          ...state.exercise,
+          value: action.values.exercise,
+          lastCared: lastExercised
+        },
+        cleanliness: {
+          ...state.cleanliness,
+          value: action.values.cleanliness,
+          lastCared: lastCleaned
+        }
       }
 
       return newValues;
 
     case "ADD_TO_BAR":
-      newState[action.category] =
-        newState[action.category] + action.value > 100
+
+      let adjustedValue = calculateDepletedValue(action.category, newState[action.category], action.etime);
+      console.log(adjustedValue);
+      newState[action.category].value =
+        adjustedValue + action.value > 100
           ? 100
-          : newState[action.category] + action.value;
+          : adjustedValue + action.value;
+      newState[action.category].lastCared = action.etime;
+      console.log(newState[action.category].value);
       return newState;
 
     default:
       return state;
   }
 };
+
+const calculateDepletedValue = (category, info, etime) => {
+
+  let depletion = Math.min(depletionRates[category] * (etime - info.lastCared), info.value);
+  return info.value - depletion;
+}
 
 export default BarReducer;

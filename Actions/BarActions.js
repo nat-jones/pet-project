@@ -6,11 +6,12 @@ export const setBar = (category, value) => {
   };
 };
 
-export const addToBar = (category, value) => {
+export const addToBar = (category, value, etime) => {
   return {
     type: "ADD_TO_BAR",
     category: category,
     value: value,
+    etime: etime
   };
 };
 

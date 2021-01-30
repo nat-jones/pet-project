@@ -1,41 +1,167 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Animated, Dimensions } from "react-native";
+import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
+import { starRequirements, checkStarLevel } from '../../BarConsts';
+import { useSelector } from "react-redux";
+import { setBar } from "../../Actions/BarActions";
 
 
 const MAX_BAR_WIDTH = Dimensions.get('window').width / 5 * 2;
 
 export default function AnimalVitalsBar(props) {
-  let barColor = 'green';
 
-  if (props.value < 9 || props.value > 91) {
-    barColor = "red";
-  } else if (props.value < 17 || props.value > 83) {
-    barColor = "orange";
-  } else if (props.value < 25 || props.value > 75) {
-    barColor = "yellow";
+
+
+
+
+  let date = new Date();
+  const getAdjustedBarWidth = () => Math.max(0, props.value - (props.depletionRate * (date.getTime() - props.lastCared)));
+
+  let initialBarWidth = getAdjustedBarWidth();
+
+  let barState = 'green';
+  if (initialBarWidth < 9 || initialBarWidth > 91) {
+    barState = 'red';
+  } else if (initialBarWidth < 17 || initialBarWidth > 83) {
+    barState = 'orange';
+  } else if (initialBarWidth < 25 || initialBarWidth > 75) {
+    barState = 'yellow';
+  }
+
+  const [barColor, setBarColor] = useState(barState);
+
+  const starPoints = useRef(new Animated.Value(0)).current;
+  const barLength = useRef(new Animated.Value(initialBarWidth)).current;
+
+
+  const [starLevel, setStarLevel] = useState(checkStarLevel(starPoints));
+
+  starPoints.addListener(
+    (value) => {
+      if (value < starRequirements[starLevel]) {
+        setStarLevel(starLevel - 1);
+      }
+      else if (value > starRequirements[starLevel + 1]) {
+        setStarLevel(startLevel + 1);
+      }
+    }
+  );
+
+  // barLength.addListener(
+  //   (value) => {
+
+  //     let adjustedValue = value.value * 100 / MAX_BAR_WIDTH;
+
+  //     if (barState === 'green' && adjustedValue > 75) {
+  //       setBarColor('yellow');
+  //     }
+  //     else if (barState === 'green' && adjustedValue < 25) {
+  //       setBarColor('yellow');
+  //     }
+  //     else if (barState === 'yellow' && adjustedValue < 17) {
+  //       setBarColor('orange');
+  //     }
+  //     else if (barState === 'yellow' && adjustedValue > 83) {
+  //       setBarColor('orange');
+  //     }
+  //     else if (barState === 'orange' && adjustedValue > 91) {
+  //       setBarColor('red');
+  //     }
+  //     else if (barState === 'orange' && adjustedValue < 9) {
+  //       setBarColor('red');
+  //     }
+  //     else if (barState === 'red' && adjustedValue >= 9) {
+  //       setBarColor('orange');
+  //     }
+  //     else if (barState === 'red' && adjustedValue <= 91) {
+  //       setBarColor('orange');
+  //     }
+  //     else if (barState === 'yellow' && adjustedValue >= 25) {
+  //       setBarColor('green');
+  //     }
+  //     else if (barState === 'yellow' && adjustedValue <= 75) {
+  //       setBarColor('green');
+  //     }
+  //     else if (barState === 'orange' && adjustedValue >= 17) {
+  //       setBarColor('yellow');
+  //     }
+  //     else if (barState === 'orange' && adjustedValue <= 83) {
+  //       setBarColor('yellow');
+  //     }
+  //   }
+  // )
+
+
+  const inRed = () => {
+    Animated.timing(
+      starPoints, {
+      toValue: 0,
+      duration: starPoints * 1000
+    }
+    ).start();
+  }
+
+  const inOrage = () => {
+    Animated.timing(
+      starPoints, {
+      toValue: 0,
+      duration: starPoints * 2000
+    }
+    ).start();
+  }
+
+  const inGreen = () => {
+    Animated.timing(
+      starPoints, {
+      toValue: 9600,
+      duration: starPoints * 500
+    }
+    )
+  }
+
+  const growBar = () => {
+
+    Animated.timing(barLength, {
+      toValue: getAdjustedBarWidth() / 100 * MAX_BAR_WIDTH,
+      duration: 500,
+      useNativeDriver: false,
+    }).start(depleteBar);
+  }
+
+  const depleteBar = () => {
+    Animated.timing(barLength, {
+      toValue: 0,
+      duration: props.value / props.depletionRate,
+      useNativeDriver: false
+    }).start();
   }
 
 
 
-  const barGrow = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    growBar()
+  }, [props.value]);
 
   useEffect(() => {
-    Animated.timing(barGrow, {
-      toValue: props.value / 100 * MAX_BAR_WIDTH,
-      duration: 500,
-      useNativeDriver: false,
-    }).start();
-  }, [props.value]);
+    Animated.timing(starPoints,
+      {
+        toValue: 6,
+        duration: 6000,
+        useNativeDriver: false
+      }
+    ).start();
+  }, []);
 
   return (
     <View style={styles.barView}>
       <View style={styles.fullBar}>
-
+        <Animated.Text>
+          {starPoints}
+        </Animated.Text>
         <Animated.View
           style={[
             styles.partialBar,
             {
-              width: barGrow,
+              width: barLength,
               backgroundColor: barColor,
             },
           ]}

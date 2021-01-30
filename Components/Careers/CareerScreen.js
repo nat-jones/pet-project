@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, Text, TouchableOpacity, Modal, Animated, StyleSheet } from 'react-native';
+import { View, Image, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import {
     width,
     height,
@@ -110,7 +110,7 @@ function CareerBackground(props) {
     const returnFromShift = async () => {
         sendBusFromWork();
         setTimeout(sendBusFromDog, 3000)
-    }
+    };
 
     return (
         <View style={styles.pageContainer}>

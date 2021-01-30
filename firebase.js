@@ -112,19 +112,17 @@ export const purchaseInventory = async (cartCost) => {
     .update(update);
 }
 
-export const updateBars = async (barNames) => {
+export const updateBars = async (barNames, etime) => {
 
   let uid = Store.getState().userID;
   let bars = Store.getState().bars;
   let updateObject = {};
-  let date = new Date();
-  let etime = date.getTime();
 
   if (barNames.includes("love")) {
 
     updateObject = {
       ...updateObject,
-      "love": bars.love,
+      "love": bars.love.value,
       "lastLoved": etime
     };
   }
@@ -132,7 +130,7 @@ export const updateBars = async (barNames) => {
   if (barNames.includes("hunger")) {
     updateObject = {
       ...updateObject,
-      "hunger": bars.hunger,
+      "hunger": bars.hunger.value,
       "lastFed": etime
     };
   }
@@ -140,7 +138,7 @@ export const updateBars = async (barNames) => {
   if (barNames.includes("exercise")) {
     updateObject = {
       ...updateObject,
-      "exercise": bars.exercise,
+      "exercise": bars.exercise.value,
       "lastWalked": etime
     };
   }
@@ -148,7 +146,7 @@ export const updateBars = async (barNames) => {
   if (barNames.includes("cleanliness")) {
     updateObject = {
       ...updateObject,
-      "cleanliness": bars.cleanliness,
+      "cleanliness": bars.cleanliness.value,
       "lastCleaned": etime
     }
   }

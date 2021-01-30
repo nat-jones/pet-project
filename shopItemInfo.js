@@ -10,11 +10,14 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/puppyDogFood.png'),
         displayString: 'Puppy Food',
         onUse: async function (dispatch) {
+            let date = new Date();
+            let etime = date.getTime();
+            console.log(etime);
             dispatch(enableScroll());
-            await dispatch(useItem(this.id));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await dispatch(useItem('puppyFood'));
+            await dispatch(addToBar("hunger", 25, etime));
+            await dispatch(addToBar("love", 10, etime));
+            await updateBars(["love", 'hunger'], etime);
         }
 
     },
@@ -24,11 +27,13 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/dogFood.png'),
         displayString: 'Dog Food',
         onUse: async (dispatch) => {
+            let date = new Date();
+            let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('dogFood'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await dispatch(addToBar("hunger", 25, etime));
+            await dispatch(addToBar("love", 10, etime));
+            await updateBars(["love", 'hunger'], etime);
         }
     },
     adultFood: {
@@ -37,11 +42,13 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/adultDogFood.png'),
         displayString: 'Adult Dog Food',
         onUse: async (dispatch) => {
+            let date = new Date();
+            let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('adultDogFood'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await dispatch(addToBar("hunger", 25, etime));
+            await dispatch(addToBar("love", 10, etime));
+            await updateBars(["love", 'hunger'], etime);
         }
     },
     rubberBall: {

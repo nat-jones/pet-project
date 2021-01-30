@@ -25,5 +25,10 @@ export const NewUserSchema = {
   lastFed: date.getTime(),
   lastExercised: date.getTime(),
   lastLoved: date.getTime(),
+  loveStars: 3,
+  hungerStars: 3,
+  exerciseStars: 3,
+  cleanlinessStars: 3,
+  intelligenceStars: 3
 
 };
