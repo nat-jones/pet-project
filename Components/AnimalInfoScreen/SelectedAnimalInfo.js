@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, ScrollView, Image, Text, StyleSheet } from 'react-native';
 import { Icon } from 'native-base';
-import { updateSponsoredAnimal } from '../../firebase';
+import { updateSponsoredAnimal } from '../../Backend/firebase';
 import { sponsorAnimal } from '../../Actions/SponsorableAnimalActions';
 import { useDispatch } from 'react-redux';
 

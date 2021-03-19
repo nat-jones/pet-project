@@ -8,7 +8,7 @@ import { setAllAccumulators } from "../../Actions/AccumulatorActions";
 import { setAllBars } from "../../Actions/BarActions";
 import { setItem } from "../../Actions/InventoryActions";
 import { login } from "../../Actions/LoginActions";
-import { createNewAccountWithUsernameAndPassword, setNewUserData, getUserData, firebase } from "../../firebase";
+import { createNewAccountWithUsernameAndPassword, setNewUserData, getUserData, firebase } from "../../Backend/firebase";
 
 export default function NewAccount(props) {
   const dispatch = useDispatch();

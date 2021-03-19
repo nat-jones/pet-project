@@ -19,12 +19,14 @@ export default function AnimalVitalsWindow(props) {
           <AnimalVitalBar
             icon={<Icon type='FontAwesome' name='heart' style={styles.icon} />}
             {...loveInfo}
+            type='love'
             depletionRate={depletionRates.love}
 
           ></AnimalVitalBar>
           <AnimalVitalBar
             icon={<Icon type='FontAwesome5' name='bath' style={styles.icon} />}
             {...cleanlinessInfo}
+            type='cleanliness'
             depletionRate={depletionRates.cleanliness}
 
 
@@ -34,12 +36,14 @@ export default function AnimalVitalsWindow(props) {
           <AnimalVitalBar
             icon={<Icon type='FontAwesome5' name='drumstick-bite' style={styles.icon} />}
             {...hungerInfo}
+            type='hunger'
             depletionRate={depletionRates.hunger}
 
           ></AnimalVitalBar>
           <AnimalVitalBar
             icon={<Icon type='MaterialCommunityIcons' name='run-fast' style={styles.icon} />}
             {...exerciseInfo}
+            type='exercise'
             depletionRate={depletionRates.exercise}
 
           ></AnimalVitalBar>

@@ -16,7 +16,9 @@ export default function SelectCareerScreen(props) {
                 pagingEnabled={true}
             >
                 {Object.keys(CAREER_INFO).map(
-                    (e) => (<CareerOption {...CAREER_INFO[e]} key={CAREER_INFO[e].id} />)
+                    (e) => (<CareerOption {...CAREER_INFO[e]}
+                        setShowCareerSelection={props.setShowCareerSelection}
+                        key={CAREER_INFO[e].id} />)
                 )
                 }
             </ScrollView>

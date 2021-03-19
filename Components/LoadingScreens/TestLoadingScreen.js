@@ -17,7 +17,7 @@ export default function TestLoadingScreen(props) {
       await dispatchAllData(uid);
       await Asset.loadAsync([
         require("../../assets/homescreenBackground.jpg"),
-        require("../../assets/adultDogFood.png"),
+        require("../../assets/oscarOrganic.png"),
         require("../../assets/receipt.png"),
         require("../../assets/apple.png"),
         require("../../assets/dogBone.png"),
@@ -31,7 +31,7 @@ export default function TestLoadingScreen(props) {
         require("../../assets/puppyDogFood.png"),
         require("../../assets/rubberBall.png"),
         require("../../assets/tennisBall.png"),
-        require("../../assets/dogFood.png"),
+        require("../../assets/felixFeast.png"),
         require("../../assets/therapyDog.jpg"),
         require("../../assets/serviceDog.jpg"),
         require("../../assets/herdingDog.jpg"),
@@ -39,6 +39,8 @@ export default function TestLoadingScreen(props) {
         require("../../assets/truffleDog.jpg"),
         require("../../assets/hollywoodDog.jpg"),
         require("../../assets/detectionDog.jpg"),
+        require("../../assets/discountFood.png"),
+        require("../../assets/sierraShampoo.png")
 
       ]);
       await setDidLoad(true);

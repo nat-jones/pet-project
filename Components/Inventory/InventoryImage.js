@@ -86,6 +86,7 @@ const InventoryImage = (props) => {
       <Image
         style={[{ zIndex: 1 }, styles.image]}
         source={props.imageSrc}
+        resizeMode="contain"
       />
       <Animated.View
         style={{
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     zIndex: 3,
+
     position: "absolute",
   },
   inventorySpace: {

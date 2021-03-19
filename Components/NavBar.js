@@ -1,11 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Image, Animated, TouchableWithoutFeedback, Dimensions } from 'react-native';
 import { Icon } from "native-base";
-import { Actions } from "react-native-router-flux";
 import { NAV_BAR_HEIGHT } from '../layoutConsts';
 import { useSelector } from 'react-redux';
-import SponsorableAnimalReducer from '../Reducers/SponsorableAnimalReducer';
-import { firebase } from '../firebase';
 
 const windowWidth = Dimensions.get('window').width;
 const passiveOptionWidth = windowWidth * .18;

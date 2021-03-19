@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Image, Text, TouchableOpacity, Animated, StyleSheet } from 'react-native';
 import {
     width,
@@ -14,17 +14,20 @@ import {
 import SelectCareerScreen from './SelectCareerScreen';
 import { useSelector, useDispatch } from 'react-redux';
 import OverlayContainer from '../Containers/OverlayContainer';
-import { Icon } from 'native-base';
 import { startShift } from '../../Actions/CareerActions';
 import { hideAnimal, showAnimal } from '../../Actions/AnimalLocationActions';
-import { updateStartedShift } from '../../firebase';
+import { updateStartedShift } from '../../Backend/firebase';
+import CareerWorkMenu from './CareerWorkMenu';
 
 
 function CareerBackground(props) {
 
-    const careerInfo = useSelector(state => state.career);
+    const careerInfo = useSelector(state => state.career.career);
+    const shiftStart = useSelector(state => state.career.lastShiftStart);
+    const shiftType = useSelector(state => state.career.lastShiftType);
     const busX = useRef(new Animated.Value(0)).current;
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const shiftTimeRemaining = useRef(new Animated.Value(0)).current;
     const [showShiftOptions, setShowShiftOptions] = useState(false);
     const dispatch = useDispatch();
 
@@ -39,7 +42,7 @@ function CareerBackground(props) {
         ).start(() => dispatch(hideAnimal()))
     };
 
-    const sendBusToWork = () => {
+    const sendBusToWork = (callback) => {
         Animated.timing(
             busX,
             {
@@ -47,7 +50,7 @@ function CareerBackground(props) {
                 duration: 3000,
                 useNativeDriver: false
             }
-        ).start()
+        ).start(callback)
     };
 
     const sendBusFromWork = () => {
@@ -85,7 +88,7 @@ function CareerBackground(props) {
         ).start();
     };
 
-    const fadeOut = async () => {
+    const fadeOut = async (callback) => {
 
         Animated.timing(
             fadeAnim,
@@ -94,7 +97,11 @@ function CareerBackground(props) {
                 duration: 150,
                 useNativeDriver: false
             }
-        ).start(() => setShowShiftOptions(false));
+        ).start(() => {
+            if (callback) { callback() }
+            setShowShiftOptions(false)
+        }
+        );
     };
 
     const dispatchShift = async (shiftType) => {
@@ -102,7 +109,7 @@ function CareerBackground(props) {
         let time = date.getTime();
         fadeOut();
         sendBusToDog();
-        setTimeout(sendBusToWork, 3000);
+        setTimeout(() => sendBusToWork(startShiftCountdown), 3000);
         await updateStartedShift(time, shiftType);
         await dispatch(startShift(time, shiftType));
     };
@@ -112,19 +119,45 @@ function CareerBackground(props) {
         setTimeout(sendBusFromDog, 3000)
     };
 
+    const startShiftCountdown = async () => {
+        shiftDuration = calculateShiftTimeRemaining();
+        Animated.timing(
+            shiftTimeRemaining,
+            {
+                toValue: 0,
+                fromValue: shiftDuration,
+                duration: shiftDuration,
+                useNativeDriver: false
+            }
+        ).start()
+    }
+
+    const calculateShiftTimeRemaining = () => {
+
+        let shiftDuration = 0;
+        let date = new Date();
+        if (props.shiftType === "short") {
+            shiftDuration = 36000000;
+        }
+        else if (props.shiftType === "medium") {
+            shiftDuration = 3600000 * 4;
+        }
+        else if (props.shiftType === "long") {
+            shiftDuration = 3600000 * 8
+        }
+        else {
+            return 0;
+        }
+
+        if (!lastShiftStart) {
+            return 0;
+        }
+
+        return lastShiftStart + shiftDuration - date.getTime();
+    }
+
     return (
         <View style={styles.pageContainer}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}>
-                    {careerInfo.displayString + " Dog"}
-                </Text>
-                <TouchableOpacity style={styles.button} onPress={returnFromShift}>
-
-                </TouchableOpacity>
-            </View>
-            <TouchableOpacity>
-
-            </TouchableOpacity>
             <TouchableOpacity style={styles.busButton} onPress={fadeIn}>
                 <Animated.View style={{
                     transform: [{ translateX: busX }]
@@ -132,38 +165,25 @@ function CareerBackground(props) {
                     <Image style={styles.workBus} source={require('../../assets/workBus.png')}>
 
                     </Image>
+                    <View style={styles.workIcon}>
+                        {careerInfo.icon}
+                    </View>
                 </Animated.View>
             </TouchableOpacity>
-            <Animated.View style={[
-                {
-                    opacity: fadeAnim,
-                    zIndex: showShiftOptions ? 3 : 1
-
-                },
-                styles.shiftView
-            ]}>
-                <View style={styles.innerShiftView}>
-                    <TouchableOpacity onPress={fadeOut} style={styles.closeIconContainer}>
-                        <Icon type='FontAwesome' name='close' style={styles.closeIcon} />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.shiftButton} onPress={() => dispatchShift('short')}>
-                        <Text style={styles.buttonText}>
-                            Work a Short Shift
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.shiftButton} onPress={() => dispatchShift('medium')}>
-                        <Text style={styles.buttonText}>
-                            Work a Medium Shift
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.shiftButton} onPress={() => dispatchShift('long')}>
-                        <Text style={styles.buttonText}>
-                            Work a Long Shift
-                        </Text>
-                    </TouchableOpacity>
-
-                </View>
-            </Animated.View>
+            {
+                shiftTimeRemaining.value > 0 ?
+                    <Animated.Text>{shiftTimeRemaining.value}</Animated.Text>
+                    : <CareerWorkMenu
+                        sendBusToWork={sendBusToDog}
+                        fadeAnim={fadeAnim}
+                        fadeOut={fadeOut}
+                        showShiftOptions={showShiftOptions}
+                        setShowShiftOptions={setShowShiftOptions}
+                        setShowCareerSelection={props.setShowCareerSelection}
+                        startShiftCountdown={startShiftCountdown}
+                        sendBusToDog={sendBusToDog}
+                        sendBusToWork={sendBusToWork}
+                    />}
 
         </View>
     )
@@ -174,7 +194,10 @@ export default function CareerScreen(props) {
     const [showCareerSelection, setShowCareerSelection] = useState(true);
 
     return (
-        <OverlayContainer front={showCareerSelection ? <SelectCareerScreen /> : null} behind={< CareerBackground />} />
+        <OverlayContainer front={
+            showCareerSelection ?
+                <SelectCareerScreen setShowCareerSelection={setShowCareerSelection} /> : null}
+            behind={< CareerBackground setShowCareerSelection={setShowCareerSelection} />} />
     )
 }
 
@@ -224,7 +247,7 @@ const styles = StyleSheet.create(
             position: 'absolute',
             top: CAREER_SCREEN_HEADER_POSITION_TOP,
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: 'center',
             flexDirection: 'row',
             backgroundColor: 'rgba(153, 130, 0, .5)',
             padding: 5
@@ -235,50 +258,12 @@ const styles = StyleSheet.create(
             color: 'gold',
             fontSize: 50
         },
-        shiftView: {
-            width: WINDOW_WIDTH,
-            height: WORK_BUS_HEIGHT,
-            borderColor: 'gold',
-            borderWidth: 3,
-            borderRadius: 5,
-            position: 'absolute',
-            bottom: WORK_BUS_MARGIN_BOTTOM,
-            backgroundColor: 'rgba(153, 130, 0, .5)',
-            alignItems: 'center',
-            justifyContent: 'center',
-        },
-        innerShiftView: {
-            width: WINDOW_WIDTH,
-            height: WORK_BUS_HEIGHT,
-            position: 'relative',
-            justifyContent: 'center',
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            paddingVertical: '5%'
-        },
 
-        closeIcon: {
-            color: "gold",
-        },
-        closeIconContainer: {
-            position: 'absolute',
-            top: 5,
-            right: 5,
-            zIndex: 2
-        },
-        shiftButton: {
-            width: '80%',
-            height: '30%',
-            backgroundColor: 'gold',
-            borderRadius: 5,
-            alignItems: 'center',
-            justifyContent: 'center'
-        },
-        buttonText: {
-            fontFamily: 'Didot-Italic',
-            fontWeight: '900',
-            fontSize: 30,
-            color: "#998200"
+
+        workIcon: {
+            position: "absolute",
+            top: WORK_BUS_HEIGHT * .55,
+            left: WINDOW_WIDTH * .6
         }
 
     }

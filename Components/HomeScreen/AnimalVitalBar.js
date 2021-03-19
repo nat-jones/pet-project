@@ -1,162 +1,76 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, View, Animated, Dimensions, Text } from "react-native";
-import { starRequirements, checkStarLevel } from '../../BarConsts';
-import { useSelector } from "react-redux";
-import { setBar } from "../../Actions/BarActions";
+import { StyleSheet, View, Animated, Dimensions, Button } from "react-native";
+import { calculateIdleStars } from '../../BarConsts';
 
 
 const MAX_BAR_WIDTH = Dimensions.get('window').width / 5 * 2;
 
 export default function AnimalVitalsBar(props) {
 
+  const getAdjustedBarValue = () => {
+    let date = new Date();
 
-
-
-
-  let date = new Date();
-  const getAdjustedBarWidth = () => Math.max(0, props.value - (props.depletionRate * (date.getTime() - props.lastCared)));
-
-  let initialBarWidth = getAdjustedBarWidth();
-
-  let barState = 'green';
-  if (initialBarWidth < 9 || initialBarWidth > 91) {
-    barState = 'red';
-  } else if (initialBarWidth < 17 || initialBarWidth > 83) {
-    barState = 'orange';
-  } else if (initialBarWidth < 25 || initialBarWidth > 75) {
-    barState = 'yellow';
+    return (Math.max(0, props.value - (props.depletionRate * (date.getTime() - props.lastCared))));
   }
 
-  const [barColor, setBarColor] = useState(barState);
+  const getBarWidth = (value) => value / 100 * MAX_BAR_WIDTH;
 
-  const starPoints = useRef(new Animated.Value(0)).current;
+  const getBarColor = (adjustedValue) => {
+    if (adjustedValue > 91 || adjustedValue < 9) { return 'red' }
+    else if (adjustedValue > 83 || adjustedValue < 17) { return 'orange' }
+    else if (adjustedValue > 75 || adjustedValue < 25) { return 'yellow' }
+    else { return 'green' }
+  }
+
+  let initialBarWidth = getAdjustedBarValue();
+
+
+  const [barColor, setBarColor] = useState(getBarColor(initialBarWidth));
+  const [starPoints, setStarPoints] = useState(0);
+
   const barLength = useRef(new Animated.Value(initialBarWidth)).current;
 
 
-  const [starLevel, setStarLevel] = useState(checkStarLevel(starPoints));
-
-  starPoints.addListener(
-    (value) => {
-      if (value < starRequirements[starLevel]) {
-        setStarLevel(starLevel - 1);
-      }
-      else if (value > starRequirements[starLevel + 1]) {
-        setStarLevel(startLevel + 1);
-      }
-    }
-  );
-
-  // barLength.addListener(
-  //   (value) => {
-
-  //     let adjustedValue = value.value * 100 / MAX_BAR_WIDTH;
-
-  //     if (barState === 'green' && adjustedValue > 75) {
-  //       setBarColor('yellow');
-  //     }
-  //     else if (barState === 'green' && adjustedValue < 25) {
-  //       setBarColor('yellow');
-  //     }
-  //     else if (barState === 'yellow' && adjustedValue < 17) {
-  //       setBarColor('orange');
-  //     }
-  //     else if (barState === 'yellow' && adjustedValue > 83) {
-  //       setBarColor('orange');
-  //     }
-  //     else if (barState === 'orange' && adjustedValue > 91) {
-  //       setBarColor('red');
-  //     }
-  //     else if (barState === 'orange' && adjustedValue < 9) {
-  //       setBarColor('red');
-  //     }
-  //     else if (barState === 'red' && adjustedValue >= 9) {
-  //       setBarColor('orange');
-  //     }
-  //     else if (barState === 'red' && adjustedValue <= 91) {
-  //       setBarColor('orange');
-  //     }
-  //     else if (barState === 'yellow' && adjustedValue >= 25) {
-  //       setBarColor('green');
-  //     }
-  //     else if (barState === 'yellow' && adjustedValue <= 75) {
-  //       setBarColor('green');
-  //     }
-  //     else if (barState === 'orange' && adjustedValue >= 17) {
-  //       setBarColor('yellow');
-  //     }
-  //     else if (barState === 'orange' && adjustedValue <= 83) {
-  //       setBarColor('yellow');
-  //     }
-  //   }
-  // )
-
-
-  const inRed = () => {
-    Animated.timing(
-      starPoints, {
-      toValue: 0,
-      duration: starPoints * 1000
-    }
-    ).start();
+  const adjustStarPointsAndBarColor = () => {
+    let barColor = getBarColor(getAdjustedBarValue());
+    setBarColor(barColor);
+    if (barColor === 'green') { setStarPoints(starPoints + 2) }
+    else if (barColor === 'orange') { setStarPoints(starPoints - .5) }
+    else if (barColor === 'red') { setStarPoints(starPoints - 1) }
   }
 
-  const inOrage = () => {
-    Animated.timing(
-      starPoints, {
-      toValue: 0,
-      duration: starPoints * 2000
-    }
-    ).start();
-  }
-
-  const inGreen = () => {
-    Animated.timing(
-      starPoints, {
-      toValue: 9600,
-      duration: starPoints * 500
-    }
-    )
-  }
-
-  const growBar = () => {
-
+  const growBar = (adjustedValue) => {
     Animated.timing(barLength, {
-      toValue: getAdjustedBarWidth() / 100 * MAX_BAR_WIDTH,
+      toValue: getBarWidth(adjustedValue),
       duration: 500,
       useNativeDriver: false,
-    }).start(depleteBar);
+    }).start(() => depleteBar(getAdjustedBarValue() / props.depletionRate));
   }
 
-  const depleteBar = () => {
+  const depleteBar = (duration) => {
     Animated.timing(barLength, {
       toValue: 0,
-      duration: props.value / props.depletionRate,
+      duration: duration,
       useNativeDriver: false
     }).start();
   }
 
-
-
   useEffect(() => {
-    growBar()
-  }, [props.value]);
+    let adjustedValue = getAdjustedBarValue();
+    growBar(adjustedValue)
+  }, [props.lastCared]);
 
-  useEffect(() => {
-    Animated.timing(starPoints,
-      {
-        toValue: 6,
-        duration: 6000,
-        useNativeDriver: false
-      }
-    ).start();
-  }, []);
+  useEffect(
+    () => {
+      let barColor = getBarColor(getAdjustedBarValue());
+      setBarColor(barColor);
+      //const startCheck = setInterval(adjustStarPointsAndBarColor, 1000)
+      //return () => clearInterval(startCheck);
+    }, [starPoints, props.lastCared]);
 
   return (
     <View style={styles.barView}>
       <View style={styles.fullBar}>
-        <Animated.Text>
-          {starPoints}
-        </Animated.Text>
         <Animated.View
           style={[
             styles.partialBar,
@@ -170,7 +84,6 @@ export default function AnimalVitalsBar(props) {
           {props.icon}
         </View>
       </View>
-
     </View>
   );
 }

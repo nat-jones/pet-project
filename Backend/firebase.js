@@ -2,9 +2,9 @@
 import * as firebase from "firebase";
 import "@firebase/auth";
 import "@firebase/firestore";
-import Store from './store';
+import Store from '../store';
 
-import { NewUserSchema } from "./FirebaseSchemas/UserSchema";
+import { NewUserSchema } from "../FirebaseSchemas/UserSchema";
 
 var firebaseConfig = {
   apiKey: "AIzaSyAzN1iSdoI_I1qnvyQXns1KmbLAwRrlc-8",
@@ -123,7 +123,8 @@ export const updateBars = async (barNames, etime) => {
     updateObject = {
       ...updateObject,
       "love": bars.love.value,
-      "lastLoved": etime
+      "lastLoved": etime,
+      "loveStars": bars.love.stars
     };
   }
 
@@ -131,7 +132,8 @@ export const updateBars = async (barNames, etime) => {
     updateObject = {
       ...updateObject,
       "hunger": bars.hunger.value,
-      "lastFed": etime
+      "lastFed": etime,
+      "hungerStars": bars.hunger.stars
     };
   }
 
@@ -139,7 +141,8 @@ export const updateBars = async (barNames, etime) => {
     updateObject = {
       ...updateObject,
       "exercise": bars.exercise.value,
-      "lastWalked": etime
+      "lastExercised": etime,
+      "exerciseStars": bars.exercise.stars
     };
   }
 
@@ -147,7 +150,8 @@ export const updateBars = async (barNames, etime) => {
     updateObject = {
       ...updateObject,
       "cleanliness": bars.cleanliness.value,
-      "lastCleaned": etime
+      "lastCleaned": etime,
+      "cleanlinessStars": bars.cleanliness.stars
     }
   }
 
@@ -176,7 +180,107 @@ export const updateStartedShift = async (shiftStart, shiftType) => {
     lastShiftStart: shiftStart,
     lastShiftType: shiftType
   }
-  console.log(updateObject);
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const feedAnimalBackend = async (data) => {
+
+  let uid = Store.getState().userID;
+  let updateObject = {
+    lastFed: data.lastFed,
+    timesFedToday: data.timesFedToday,
+    didMisfeed: data.didMisfeed
+  }
+
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const refreshHungerInfoBackend = async ({ timesFedToday, hungerStars, didMisfeed }) => {
+  let uid = Store.getState().userID;
+  let updateObject = {
+    timesFedToday: timesFedToday,
+    hungerStars: hungerStars,
+    didMisfeed: didMisfeed
+  }
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+
+
+export const refreshExerciseInfoBackend = async ({ timesExercisedToday, didMisexercise, exerciseStars }) => {
+  let uid = Store.getState().userID;
+  let updateObject = {
+    timesExercisedToday: timesExercisedToday,
+    didMisExercise: didMisexercise,
+    exerciseStars: exerciseStars,
+
+  }
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const refreshCleanlinessInfoBackend = async ({ timesCleanedToday, didMisclean, cleanlinessStars }) => {
+  let uid = Store.getState().userID;
+  let updateObject = {
+    timesCleanedToday: timesCleanedToday,
+    didMisclean: didMisclean,
+    cleanlinessStars: cleanlinessStars
+  }
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const feedPetBackend = async ({ lastFed, didMisfeed, timesFedToday }) => {
+
+  let uid = Store.getState().userID;
+  let updateObject = {
+    lastFed: lastFed,
+    didMisfeed: didMisfeed,
+    timesFedToday: timesFedToday
+  }
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const exercisePetBackend = async ({ lastExercised, didMisexercise, timesExercisedToday }) => {
+
+  let uid = Store.getState().userID;
+  let updateObject = {
+    lastExercised: lastExercised,
+    timesExercisedToday: timesExercisedToday,
+    didMisExercise: didMisexercise
+  }
+
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const cleanPetBackend = async ({ lastCleaned, didMisclean, timesCleanedToday }) => {
+
+  let uid = Store.getState().userID;
+  let updateObject = {
+    lastCleaned: lastCleaned,
+    timesCleanedToday: timesCleanedToday,
+    didMisclean: didMisclean
+  }
+
   await db
     .collection('Users')
     .doc(uid)

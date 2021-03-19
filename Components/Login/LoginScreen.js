@@ -9,13 +9,11 @@ import {
 } from "react-native";
 import ForestBackground from "../Backgrounds/ForestBackground";
 import { useDispatch } from "react-redux";
-import { dispatchAllData } from './LoginFunctions';
 import { login } from '../../Actions/LoginActions';
 import {
     firebase,
     loginWithUsernameAndPassword,
-    getUserData,
-} from "../../firebase";
+} from "../../Backend/firebase";
 
 /* This component represents the login screen for returning users*/
 

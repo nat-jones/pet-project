@@ -16,7 +16,7 @@ import { SHOP_ITEM_INFO } from '../../shopItemInfo';
 import { useAccumulator } from '../../Actions/AccumulatorActions';
 import SummaryLineItem from './SummaryLineItem';
 import { addCartload } from '../../Actions/InventoryActions';
-import { purchaseInventory } from '../../firebase';
+import { purchaseInventory } from '../../Backend/firebase';
 import { clearCart } from '../../Actions/ShopActions';
 
 

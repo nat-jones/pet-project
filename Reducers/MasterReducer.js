@@ -8,6 +8,9 @@ import DragReducer from "./DragReducer";
 import SponsorableAnimalReducer from "./SponsorableAnimalReducer";
 import ShopReducer from './ShopReducer';
 import CareerReducer from "./CareerReducer";
+import HungerReducer from "./HungerReducer";
+import ExerciseReducer from "./ExerciseReducer";
+import CleanlinessReducer from "./CleanlinessReducer";
 
 const MasterReducer = combineReducers({
   userID: LoginReducer,
@@ -18,7 +21,10 @@ const MasterReducer = combineReducers({
   drag: DragReducer,
   sponsorableAnimals: SponsorableAnimalReducer,
   cart: ShopReducer,
-  career: CareerReducer
+  career: CareerReducer,
+  hunger: HungerReducer,
+  exercise: ExerciseReducer,
+  cleanliness: CleanlinessReducer
 });
 
 export default MasterReducer;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Image, ScrollView, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Image, StyleSheet, TouchableOpacity, Text, Modal } from 'react-native';
 import {
     BAR_STATS_WRAPPER_HEIGHT,
     IMAGE_PADDING,
@@ -15,13 +15,36 @@ import {
     DESCRIPTION_PADDING
 } from '../../layoutConsts';
 import { Icon } from 'native-base';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setCareer } from '../../Actions/CareerActions';
+import { calculateIdleStars, checkStarLevel } from '../../BarConsts';
 
 export default function CareerOption(props) {
 
     const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
+    const barStats = useSelector(state => state.bars)
+    const [showUserStars, setShowUserStars] = useState(false);
+    const [starVals, setStarVals] = useState(
+        {
+            love: 0,
+            hunger: 0,
+            cleanliness: 0,
+            exercise: 0
+        }
+    );
+
+    useEffect(() => {
+        let newStars = Object.keys(starVals).reduce(
+            (acc, e) => {
+                let keyStats = barStats[e];
+                acc[e] = keyStats.stars + calculateIdleStars(keyStats.value, keyStats.lastCared);
+                return acc;
+            }, {}
+        );
+        setStarVals(newStars);
+
+    }, [showUserStars])
 
     return (
         <View style={[styles.optionWrapper, { backgroundColor: props.primaryColor }]}>
@@ -34,35 +57,49 @@ export default function CareerOption(props) {
             <View style={styles.imageWrapper}>
                 <Image style={styles.image} source={props.imageSrc} />
             </View>
-            {/* <ScrollView style={styles.scrollView} contentContainerStyle={styles.descriptionWrapper}>
-                <Text style={[styles.font, styles.barStat]}>{props.description}</Text>
-            </ScrollView> */}
             <View style={styles.barStatsWrapper}>
-                {/*Object.keys(props.barVals).map(
-                    (e) => {
-                        let icons = new Array(
-                            props.barVals[e]
-                        ).fill(
-                            <Icon
-                                type='FontAwesome'
-                                name='star'
-                                style={[styles.barStat, styles.barStatIcon]}
-                                key={} />
-                        );
-                        return (
-                            <View style={styles.barStatLine}>
-                                <View style={styles.barStatTextWrapper}>
-                                    <Text style={[styles.barStat, styles.font]}>{e + ':'}</Text>
-                                </View>
-                                <View style={styles.barStatIconWrapper}>
-                                    {icons}
-                                </View>
-                            </View>);
-                    }
-                )*/}
+                <View style={styles.barStatsArea}>
+                    {Object.keys(props.barVals).map(
+                        (e) => {
+                            let icons = new Array(
+                                showUserStars ? checkStarLevel(starVals[e]) : props.barVals[e]
+                            ).fill(
+                                <Icon
+                                    type='FontAwesome'
+                                    name='star'
+                                    style={[styles.barStat, styles.barStatIcon]}
+                                />
+                            );
+                            return (
+                                <View style={styles.barStatLine}>
+                                    <View style={styles.barStatTextWrapper}>
+                                        <Text style={[styles.barStat, styles.font]}>{e + ':'}</Text>
+                                    </View>
+                                    <View style={styles.barStatIconWrapper}>
+                                        {icons}
+                                    </View>
+                                </View>);
+                        }
+                    )}
+                </View>
+                <View style={styles.dogStarToggle}>
+                    <TouchableOpacity
+                        onPressIn={() => {
+                            setShowUserStars(true)
+                        }}
+                        onPressOut={() => setShowUserStars(false)}
+                    >
+                        <Icon type='MaterialCommunityIcons' name='dog' />
+                    </TouchableOpacity>
+                </View>
             </View>
             <View>
-                <TouchableOpacity style={[styles.button]} onPress={() => dispatch(setCareer(props.id))}>
+                <TouchableOpacity style={[styles.button]} onPress={
+                    () => {
+                        dispatch(setCareer(props.id));
+                        props.setShowCareerSelection(false);
+                    }
+                }>
                     <Text style={[styles.font, styles.buttonFont]}>{"Become a " + props.displayString + " Dog!"}</Text>
                 </TouchableOpacity>
 
@@ -158,9 +195,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(153, 153, 153, .6)'
     },
     barStatsWrapper: {
-        width: '100%',
+        width: "100%",
         height: BAR_STATS_WRAPPER_HEIGHT,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row'
+    },
+    barStatsArea: {
+        width: '80%',
+        height: BAR_STATS_WRAPPER_HEIGHT,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    dogStarToggle: {
+        width: '20%',
+        height: BAR_STATS_WRAPPER_HEIGHT,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     barStatIconWrapper: {
         flexDirection: 'row',

@@ -1,18 +1,13 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState, useRef } from "react";
-import { StyleSheet, View, Image, Dimensions } from "react-native";
+import React from "react";
+import { StyleSheet, View, Image } from "react-native";
 import AnimalVitalsWindow from "./AnimalVitalsWindow";
-import HomeTopBar from "./HomeTopBar";
 import InventoryDropDown from "../Inventory/InventoryDropDown";
-import TestLoadingScreen from "../LoadingScreens/TestLoadingScreen";
 import { useSelector, useDispatch } from "react-redux";
 import { setAnimalLocation } from '../../Actions/AnimalLocationActions';
 import OverlayContainer from '../Containers/OverlayContainer';
 import { ANIMAL_POSITION_BOTTOM, ANIMAL_HEIGHT, width, height } from '../../layoutConsts';
 import DraggableImage from "../Inventory/DraggableImage";
-
-const windowDims = Dimensions.get('window')
-
 
 function HomeScreenBackground(props) {
 
@@ -47,6 +42,7 @@ function HomeScreenBackground(props) {
           style={[styles.animalImage, { opacity: (showAnimal ? 1 : .5) }]}
         />
       </View>
+
       <AnimalVitalsWindow />
       <InventoryDropDown />
       <StatusBar style="auto" />

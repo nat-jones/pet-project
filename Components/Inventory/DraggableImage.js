@@ -28,7 +28,11 @@ export default function DraggableImage(props) {
 
                 }}
             >
-                <Image style={[{ top: offset.y + INVENTORY_POSITION_TOP, left: offset.x + INVENTORY_CARET_WIDTH }, styles.image]} source={dragItem.imageSrc} />
+                <Image
+                    style={[{ top: offset.y + INVENTORY_POSITION_TOP, left: offset.x + INVENTORY_CARET_WIDTH }, styles.image]}
+                    source={dragItem.imageSrc}
+                    resizeMode="contain"
+                />
             </Animated.View>
         );
     }

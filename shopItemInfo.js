@@ -1,54 +1,71 @@
 import { enableScroll } from './Actions/DragActions';
 import { addToBar } from './Actions/BarActions';
 import { useItem } from './Actions/InventoryActions';
-import { updateBars } from './firebase';
+import { updateBars } from './Backend/firebase';
+import {
+    reduxAndFirebaseFeedPet,
+    reduxAndFirebaseExercisePet,
+    reduxAndFirebaseCleanPet
+} from './ReduxBackendWrappers';
+import Store from './store';
+
+const onFoodUse = async (dispatch, quality, itemId) => {
+    let hungerInfo = Store.getState().hunger;
+    let date = new Date();
+    let etime = date.getTime();
+
+    dispatch(enableScroll());
+    await dispatch(useItem(itemId));
+    await reduxAndFirebaseFeedPet(dispatch, { ...hungerInfo, time: etime })
+}
+
+const onExerciseUse = async (dispatch, quality, itemId) => {
+    let exerciseInfo = Store.getState().exercise;
+    let date = new Date();
+    let etime = date.getTime();
+
+    dispatch(enableScroll());
+    await dispatch(useItem(itemId));
+    await reduxAndFirebaseExercisePet(dispatch, { ...exerciseInfo, time: etime })
+}
+
+const onCleanerUse = async (dispatch, quality, itemId) => {
+    let cleanlinessInfo = Store.getState().cleanliness;
+    let date = new Date();
+    let etime = date.getTime();
+
+    dispatch(enableScroll());
+    await dispatch(useItem(itemId));
+    await reduxAndFirebaseCleanPet(dispatch, { ...cleanlinessInfo, time: etime })
+}
 
 export const SHOP_ITEM_INFO = {
-    puppyFood: {
-        id: 'puppyFood',
-        price: 200,
-        imageSrc: require('./assets/puppyDogFood.png'),
-        displayString: 'Puppy Food',
+    discountFood: {
+        id: 'discountFood',
+        price: 50,
+        imageSrc: require('./assets/discountFood.png'),
+        displayString: 'Discount Food',
         onUse: async function (dispatch) {
-            let date = new Date();
-            let etime = date.getTime();
-            console.log(etime);
-            dispatch(enableScroll());
-            await dispatch(useItem('puppyFood'));
-            await dispatch(addToBar("hunger", 25, etime));
-            await dispatch(addToBar("love", 10, etime));
-            await updateBars(["love", 'hunger'], etime);
+            await onFoodUse(dispatch, 1, 'discountFood');
         }
 
     },
-    dogFood: {
-        id: 'dogFood',
-        price: 150,
-        imageSrc: require('./assets/dogFood.png'),
-        displayString: 'Dog Food',
+    felixFeast: {
+        id: 'felixFeast',
+        price: 100,
+        imageSrc: require('./assets/felixFeast.png'),
+        displayString: 'Felix Feast',
         onUse: async (dispatch) => {
-            let date = new Date();
-            let etime = date.getTime();
-            dispatch(enableScroll());
-            await dispatch(useItem('dogFood'));
-            await dispatch(addToBar("hunger", 25, etime));
-            await dispatch(addToBar("love", 10, etime));
-            await updateBars(["love", 'hunger'], etime);
+            await onFoodUse(dispatch, 1, 'felixFeast');
         }
     },
-    adultFood: {
-        id: 'adultFood',
-        price: 250,
-        imageSrc: require('./assets/adultDogFood.png'),
-        displayString: 'Adult Dog Food',
+    oscarOrganic: {
+        id: 'oscarOrganic',
+        price: 300,
+        imageSrc: require('./assets/oscarOrganic.png'),
+        displayString: "Oscar's Organic",
         onUse: async (dispatch) => {
-            let date = new Date();
-            let etime = date.getTime();
-            dispatch(enableScroll());
-            await dispatch(useItem('adultDogFood'));
-            await dispatch(addToBar("hunger", 25, etime));
-            await dispatch(addToBar("love", 10, etime));
-            await updateBars(["love", 'hunger'], etime);
+            await onFoodUse(dispatch, 1, 'oscarOrganic');
         }
     },
     rubberBall: {
@@ -57,11 +74,7 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/rubberBall.png'),
         displayString: 'Rubber Balls',
         onUse: async (dispatch) => {
-            dispatch(enableScroll());
-            await dispatch(useItem('rubberBall'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await onExerciseUse(dispatch, 1, 'rubberBall')
         }
     },
     rawhideBone: {
@@ -70,11 +83,7 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/dogBone.png'),
         displayString: 'Rawhide Bones',
         onUse: async (dispatch) => {
-            dispatch(enableScroll());
-            await dispatch(useItem('rawhideBone'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await onExerciseUse(dispatch, 1, 'rahideBone')
         }
     },
     plushToy: {
@@ -83,11 +92,7 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/dogPlushToy.png'),
         displayString: 'Plush Toys',
         onUse: async (dispatch) => {
-            dispatch(enableScroll());
-            await dispatch(useItem('plushToy'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await onExerciseUse(dispatch, 1, 'plushToy')
         }
     },
     apple: {
@@ -96,11 +101,7 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/apple.png'),
         displayString: 'Apple Slices',
         onUse: async (dispatch) => {
-            dispatch(enableScroll());
-            await dispatch(useItem('apple'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await onCleanerUse(dispatch, 1, 'apple')
         }
     },
     milkBone: {
@@ -109,11 +110,13 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/dogTreatMilkBone.png'),
         displayString: 'Dog Treats',
         onUse: async (dispatch) => {
+            let date = new Date();
+            let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('milkBone'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await dispatch(addToBar("hunger", 5, etime));
+            await dispatch(addToBar("love", 10, etime));
+            await updateBars(["love", 'hunger'], etime);
         }
     },
     peanutButter: {
@@ -122,24 +125,28 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/peanutButter.png'),
         displayString: 'Peanut Butter',
         onUse: async (dispatch) => {
+            let date = new Date();
+            let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('peanutButter'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await dispatch(addToBar("hunger", 5, etime));
+            await dispatch(addToBar("love", 10, etime));
+            await updateBars(["love", 'hunger'], etime);
         }
     },
-    pill: {
-        id: 'pill',
+    antibidogics: {
+        id: 'antibidogics',
         price: 1000,
-        imageSrc: require('./assets/dogPills.png'),
+        imageSrc: require('./assets/antibidogics.png'),
         displayString: 'Pills',
         onUse: async (dispatch) => {
+            let date = new Date();
+            let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('pill'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await dispatch(addToBar("hunger", 25, etime));
+            await dispatch(addToBar("love", 10, etime));
+            await updateBars(["love", 'hunger'], etime);
         }
     },
     ointment: {
@@ -148,18 +155,32 @@ export const SHOP_ITEM_INFO = {
         imageSrc: require('./assets/dogOintment.png'),
         displayString: 'Ointment',
         onUse: async (dispatch) => {
+            let date = new Date();
+            let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('ointment'));
-            await dispatch(addToBar("hunger", 25));
-            await dispatch(addToBar("love", 10));
-            await updateBars(["love", 'hunger']);
+            await dispatch(addToBar("hunger", 25, etime));
+            await dispatch(addToBar("love", 10, etime));
+            await updateBars(["love", 'hunger'], etime);
+        }
+    },
+    sierraShampoo: {
+        id: 'sierraShampoo',
+        price: 500,
+        imageSrc: require('./assets/sierraShampoo.png'),
+        displayString: "Sierra's Shampoo",
+        onUse: async (dispatch) => {
+            let date = new Date();
+            let etime = date.getTime();
+            dispatch(enableScroll());
+            await reduxAndFirebaseCleanPet(dispatch, 1, 'sierraShampoo');
         }
     }
 }
 
 export const SHELF_ORDER = [
-    ['puppyFood', 'dogFood', 'adultFood'],
+    ['discountFood', 'felixFeast', 'oscarOrganic'],
     ['rubberBall', 'rawhideBone', 'plushToy'],
     ['apple', 'milkBone', 'peanutButter'],
-    ['pill', 'ointment']
+    ['sierraShampoo', 'antibidogics', 'ointment']
 ]
