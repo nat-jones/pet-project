@@ -17,13 +17,11 @@ import {
 import { Icon } from 'native-base';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCareer } from '../../Actions/CareerActions';
-import { calculateIdleStars, checkStarLevel } from '../../BarConsts';
 
 export default function CareerOption(props) {
 
     const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
-    const barStats = useSelector(state => state.bars)
     const [showUserStars, setShowUserStars] = useState(false);
     const [starVals, setStarVals] = useState(
         {
@@ -33,18 +31,6 @@ export default function CareerOption(props) {
             exercise: 0
         }
     );
-
-    useEffect(() => {
-        let newStars = Object.keys(starVals).reduce(
-            (acc, e) => {
-                let keyStats = barStats[e];
-                acc[e] = keyStats.stars + calculateIdleStars(keyStats.value, keyStats.lastCared);
-                return acc;
-            }, {}
-        );
-        setStarVals(newStars);
-
-    }, [showUserStars])
 
     return (
         <View style={[styles.optionWrapper, { backgroundColor: props.primaryColor }]}>

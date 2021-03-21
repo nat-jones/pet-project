@@ -1,13 +1,14 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { StyleSheet, View, Image } from "react-native";
-import AnimalVitalsWindow from "./AnimalVitalsWindow";
+import React, { useState } from "react";
+import { StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import InventoryDropDown from "../Inventory/InventoryDropDown";
 import { useSelector, useDispatch } from "react-redux";
 import { setAnimalLocation } from '../../Actions/AnimalLocationActions';
 import OverlayContainer from '../Containers/OverlayContainer';
-import { ANIMAL_POSITION_BOTTOM, ANIMAL_HEIGHT, width, height } from '../../layoutConsts';
+import { ANIMAL_POSITION_BOTTOM, ANIMAL_HEIGHT, width, height, INVENTORY_POSITION_TOP, INVENTORY_HEIGHT } from '../../layoutConsts';
+import { Icon } from 'native-base';
 import DraggableImage from "../Inventory/DraggableImage";
+import ToDoList from './ToDoList';
 
 function HomeScreenBackground(props) {
 
@@ -15,6 +16,7 @@ function HomeScreenBackground(props) {
 
   const dispatch = useDispatch();
   const showAnimal = useSelector(state => state.animalLocation.show);
+  const [showToDoList, setShowToDoList] = useState(false);
 
 
 
@@ -37,14 +39,16 @@ function HomeScreenBackground(props) {
         }}
       >
         <Image
-          source={require('../../assets/ScottishTerrier.png')}
+          source={require('../../assets/GoldenRetrieverSad.png')}
           key={"animalImage"}
           style={[styles.animalImage, { opacity: (showAnimal ? 1 : .5) }]}
         />
       </View>
-
-      <AnimalVitalsWindow />
       <InventoryDropDown />
+      <TouchableOpacity style={styles.toDoListButton} onPress={() => setShowToDoList(true)}>
+        <Icon type="FontAwesome" name="pencil-square-o" style={styles.icon}></Icon>
+      </TouchableOpacity>
+      <ToDoList setShowToDoList={setShowToDoList} showToDoList={showToDoList} />
       <StatusBar style="auto" />
 
     </View>
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
     height: "100%",
     aspectRatio: 8 / 9,
     flex: 1,
-    resizeMode: "cover",
+    resizeMode: "contain",
     zIndex: 1,
   },
   buttonArea: {
@@ -103,12 +107,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 2,
   },
-  icon: {
-    color: "#bf9700",
-    opacity: 0.8,
-  },
   buttonText: {
     fontSize: 20,
     color: "#bf9700",
   },
+  toDoListButton: {
+    top: INVENTORY_POSITION_TOP + INVENTORY_HEIGHT + height / 60,
+    right: width / 100,
+    position: "absolute",
+    backgroundColor: "gold",
+    padding: 5,
+    borderRadius: 10,
+    borderColor: '#ffec80',
+    borderWidth: 2
+  },
+  icon: {
+    fontSize: 50,
+    color: "#998200"
+  }
 });

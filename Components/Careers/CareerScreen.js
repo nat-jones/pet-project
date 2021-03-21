@@ -259,7 +259,6 @@ const styles = StyleSheet.create(
             fontSize: 50
         },
 
-
         workIcon: {
             position: "absolute",
             top: WORK_BUS_HEIGHT * .55,

@@ -1,7 +1,6 @@
 
 import Store from '../../store';
 import { setAllAccumulators } from "../../Actions/AccumulatorActions";
-import { setAllBars } from "../../Actions/BarActions";
 import { setAllCareerInfo } from "../../Actions/CareerActions";
 import { setInventory, setItem } from "../../Actions/InventoryActions";
 import { sponsorAnimal } from '../../Actions/SponsorableAnimalActions';
@@ -29,22 +28,7 @@ export const dispatchUserData = async (data) => {
             gems: data.gems,
         })
     );
-    await dispatch(
-        setAllBars({
-            love: data.love,
-            cleanliness: data.cleanliness,
-            hunger: data.hunger,
-            exercise: data.exercise,
-            lastFed: data.lastFed,
-            lastCleaned: data.lastCleaned,
-            lastLoved: data.lastLoved,
-            lastExercised: data.lastExercised,
-            loveStars: data.loveStars,
-            exerciseStars: data.exerciseStars,
-            hungerStars: data.hungerStars,
-            cleanlinessStars: data.cleanlinessStars
-        })
-    );
+
     await reduxAndFirebaseSetHunger(dispatch,
         {
             lastFed: data.lastFed,

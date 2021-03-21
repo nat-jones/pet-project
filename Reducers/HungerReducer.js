@@ -1,10 +1,11 @@
-import { refreshHungerInfoBackend, feedAnimalBackend } from '../Backend/firebase';
 
 export default function (state = {
     lastFed: null,
     timesFedToday: null,
     hungerStars: null,
-    didMisfeed: null
+    didMisfeed: null,
+    checkTimeSince: checkTimeSince
+
 }, action) {
 
 
@@ -14,7 +15,7 @@ export default function (state = {
             return { ...state, ...action.value }
 
         case ("SET_HUNGER_INFO"):
-            return { ...action.value }
+            return { ...action.value, checkTimeSince: checkTimeSince }
 
         default:
             return state

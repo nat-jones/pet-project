@@ -5,7 +5,6 @@ import { Actions } from "react-native-router-flux";
 import { Item, Input, Button, Text } from "native-base";
 import { useDispatch } from "react-redux";
 import { setAllAccumulators } from "../../Actions/AccumulatorActions";
-import { setAllBars } from "../../Actions/BarActions";
 import { setItem } from "../../Actions/InventoryActions";
 import { login } from "../../Actions/LoginActions";
 import { createNewAccountWithUsernameAndPassword, setNewUserData, getUserData, firebase } from "../../Backend/firebase";
@@ -37,14 +36,6 @@ export default function NewAccount(props) {
         coins: data.coins,
         xp: data.xp,
         gems: data.gems,
-      })
-    );
-    await dispatch(
-      setAllBars({
-        love: data.love,
-        cleanliness: data.cleanliness,
-        hunger: data.hunger,
-        exercise: data.exercise,
       })
     );
     await dispatch(setItem('dogFood', data.food));

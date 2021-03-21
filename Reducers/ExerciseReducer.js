@@ -1,10 +1,10 @@
-import { refreshExerciseInfoBackend, exerciseAnimalBackend } from '../Backend/firebase';
 
 export default function (state = {
     lastExercised: null,
     timesExercisedToday: null,
     exerciseStars: null,
-    didMisexercise: null
+    didMisexercise: null,
+    checkTimeSince: checkTimeSince
 }, action) {
 
 
@@ -14,7 +14,7 @@ export default function (state = {
             return { ...state, ...action.value }
 
         case ("SET_EXERCISE_INFO"):
-            return { ...action.value }
+            return { ...action.value, checkTimeSince: checkTimeSince }
 
 
         default:

@@ -1,5 +1,4 @@
 import { enableScroll } from './Actions/DragActions';
-import { addToBar } from './Actions/BarActions';
 import { useItem } from './Actions/InventoryActions';
 import { updateBars } from './Backend/firebase';
 import {
@@ -114,8 +113,6 @@ export const SHOP_ITEM_INFO = {
             let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('milkBone'));
-            await dispatch(addToBar("hunger", 5, etime));
-            await dispatch(addToBar("love", 10, etime));
             await updateBars(["love", 'hunger'], etime);
         }
     },
@@ -129,8 +126,6 @@ export const SHOP_ITEM_INFO = {
             let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('peanutButter'));
-            await dispatch(addToBar("hunger", 5, etime));
-            await dispatch(addToBar("love", 10, etime));
             await updateBars(["love", 'hunger'], etime);
         }
     },
@@ -144,8 +139,6 @@ export const SHOP_ITEM_INFO = {
             let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('pill'));
-            await dispatch(addToBar("hunger", 25, etime));
-            await dispatch(addToBar("love", 10, etime));
             await updateBars(["love", 'hunger'], etime);
         }
     },
@@ -159,8 +152,6 @@ export const SHOP_ITEM_INFO = {
             let etime = date.getTime();
             dispatch(enableScroll());
             await dispatch(useItem('ointment'));
-            await dispatch(addToBar("hunger", 25, etime));
-            await dispatch(addToBar("love", 10, etime));
             await updateBars(["love", 'hunger'], etime);
         }
     },

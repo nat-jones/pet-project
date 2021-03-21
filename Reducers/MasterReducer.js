@@ -1,7 +1,6 @@
 import LoginReducer from "./LoginReducer";
 import AccumulatorReducer from "./AccumulatorReducer";
 import InventoryReducer from "./InventoryReducer";
-import BarReducer from "./BarReducer";
 import AnimalLocationReducer from './AnimalLocationReducer';
 import { combineReducers } from "redux";
 import DragReducer from "./DragReducer";
@@ -16,7 +15,6 @@ const MasterReducer = combineReducers({
   userID: LoginReducer,
   accumulators: AccumulatorReducer,
   inventory: InventoryReducer,
-  bars: BarReducer,
   animalLocation: AnimalLocationReducer,
   drag: DragReducer,
   sponsorableAnimals: SponsorableAnimalReducer,
