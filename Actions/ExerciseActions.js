@@ -1,8 +1,8 @@
-export const exercisePet = (time) => {
+export const exercisePet = (data) => {
     return (
         {
             type: "EXERCISE_PET",
-            time: time
+            value: data
         }
     )
 }

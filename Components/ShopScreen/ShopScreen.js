@@ -25,7 +25,7 @@ import { useSelector } from 'react-redux';
 
 export default function shopScreen(props) {
 
-    const coins = useSelector(state => state.accumulators.coins);
+    const coins = useSelector(state => state.coins);
     const [showCheckout, setShowCheckout] = useState(false);
 
 

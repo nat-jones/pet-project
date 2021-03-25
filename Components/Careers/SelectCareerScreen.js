@@ -4,7 +4,6 @@ import CareerOption from './CareerOption';
 import { CAREER_INFO } from '../../careerInfo';
 import { WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TOP_MARGIN, WINDOW_BOTTOM_MARGIN } from '../../layoutConsts';
 
-
 export default function SelectCareerScreen(props) {
 
     return (

@@ -1,13 +1,14 @@
 
 import Store from '../../store';
-import { setAllAccumulators } from "../../Actions/AccumulatorActions";
+import { setCoins } from "../../Actions/CoinActions";
 import { setAllCareerInfo } from "../../Actions/CareerActions";
 import { setInventory, setItem } from "../../Actions/InventoryActions";
 import { sponsorAnimal } from '../../Actions/SponsorableAnimalActions';
 import { getAllAnimalInfo } from '../../DogScraper';
-import { getUserData } from '../../Backend/firebase';
+import { checkIn, getUserData } from '../../Backend/firebase';
 import { setAllDogInfo } from '../../Actions/SponsorableAnimalActions';
 import { SHOP_ITEM_INFO } from '../../shopItemInfo';
+import { CAREER_INFO } from '../../careerInfo';
 import { setHungerInfo } from '../../Actions/HungerActions';
 import { setExerciseInfo } from '../../Actions/ExerciseActions';
 import {
@@ -15,19 +16,17 @@ import {
     reduxAndFirebaseSetExercise,
     reduxAndFirebaseSetCleanliness
 } from '../../ReduxBackendWrappers';
+import { hideAnimal } from '../../Actions/AnimalLocationActions';
 const dispatch = Store.dispatch;
 
 export const dispatchUserData = async (data) => {
 
     date = new Date();
     let time = date.getTime()
-    await dispatch(
-        setAllAccumulators({
-            coins: data.coins,
-            xp: data.xp,
-            gems: data.gems,
-        })
-    );
+    let lastCheckInDate = new Date(data.lastCheckIn);
+    await dispatch(setCoins(data.coins));
+
+    await checkIn(date.getTime());
 
     await reduxAndFirebaseSetHunger(dispatch,
         {
@@ -35,8 +34,8 @@ export const dispatchUserData = async (data) => {
             didMisfeed: data.didMisfeed,
             hungerStars: data.hungerStars,
             timesFedToday: data.timesFedToday,
-            lastCheckIn: data.lastCheckIn,
-            time: time
+            lastCheckIn: lastCheckInDate,
+            time: date
         }
     );
 
@@ -46,8 +45,8 @@ export const dispatchUserData = async (data) => {
             didMisexercise: data.didMisexercise,
             exerciseStars: data.exerciseStars,
             timesExercisedToday: data.timesExercisedToday,
-            lastCheckIn: data.lastCheckIn,
-            time: time
+            lastCheckIn: lastCheckInDate,
+            time: date
         });
 
     await reduxAndFirebaseSetCleanliness(dispatch,
@@ -56,8 +55,8 @@ export const dispatchUserData = async (data) => {
             didMisclean: data.didMisclean,
             cleanlinessStars: data.cleanlinessStars,
             timesCleanedToday: data.timesCleanedToday,
-            lastCheckIn: data.lastCheckIn,
-            time: time
+            lastCheckIn: lastCheckInDate,
+            time: date
         }
     )
     let inventory = Object.keys(SHOP_ITEM_INFO).reduce(
@@ -74,10 +73,13 @@ export const dispatchUserData = async (data) => {
     await dispatch(sponsorAnimal(data.sponsoredAnimalID));
 
     await dispatch(setAllCareerInfo({
-        careerID: data.careerID,
-        lastShiftStart: data.lastShiftStart
+        career: data.careerID,
+        expectedShiftEnd: data.expectedShiftEnd,
+        lastShiftType: data.lastShiftType
     }
     ));
+
+    checkOnShift(data.expectedShiftEnd) && dispatch(hideAnimal());
 };
 
 export const dispatchAllData = async (uid) => {
@@ -86,4 +88,18 @@ export const dispatchAllData = async (uid) => {
     await dispatchUserData(userData);
     let dogInfo = await (getAllAnimalInfo());
     await dispatch(setAllDogInfo(dogInfo));
+}
+
+const checkOnShift = (expectedShiftEnd) => {
+
+    let date = new Date();
+    let time = date.getTime();
+
+    return time < expectedShiftEnd;
+
+}
+
+const collectPayment = (lastShiftStart, lastCheckIn, lastShiftType) => {
+
+    let expectedShiftEnd
 }

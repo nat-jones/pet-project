@@ -12,24 +12,39 @@ import {
     CAREER_SCREEN_HEADER_POSITION_TOP
 } from '../../layoutConsts';
 import SelectCareerScreen from './SelectCareerScreen';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, connect } from 'react-redux';
 import OverlayContainer from '../Containers/OverlayContainer';
 import { startShift } from '../../Actions/CareerActions';
 import { hideAnimal, showAnimal } from '../../Actions/AnimalLocationActions';
 import { updateStartedShift } from '../../Backend/firebase';
 import CareerWorkMenu from './CareerWorkMenu';
+import { reduxAndFirebaseAddCoins, reduxAndFirebaseReduceShift, reduxAndFirebaseStartShift } from "../../ReduxBackendWrappers";
 
+var timeouts = [];
 
 function CareerBackground(props) {
 
     const careerInfo = useSelector(state => state.career.career);
-    const shiftStart = useSelector(state => state.career.lastShiftStart);
+    const career = useSelector(state => state.career);
+    const expectedShiftEnd = useSelector(state => state.career.expectedShiftEnd);
     const shiftType = useSelector(state => state.career.lastShiftType);
+    const animalIsShown = useSelector(state => state.animalLocation.show);
     const busX = useRef(new Animated.Value(0)).current;
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const shiftTimeRemaining = useRef(new Animated.Value(0)).current;
     const [showShiftOptions, setShowShiftOptions] = useState(false);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        for (i = 0; i < timeouts.length; i++) {
+            clearTimeout(timeouts[i]);
+        }
+        timeouts = [];
+        if (!animalIsShown) {
+
+            timeouts.push(setTimeout(checkShiftEnd, 1000));
+        }
+    }, [animalIsShown, expectedShiftEnd])
 
     const sendBusToDog = () => {
         Animated.timing(
@@ -43,6 +58,7 @@ function CareerBackground(props) {
     };
 
     const sendBusToWork = (callback) => {
+
         Animated.timing(
             busX,
             {
@@ -50,7 +66,7 @@ function CareerBackground(props) {
                 duration: 3000,
                 useNativeDriver: false
             }
-        ).start(callback)
+        ).start(() => { if (callback) { callback() } })
     };
 
     const sendBusFromWork = () => {
@@ -61,7 +77,9 @@ function CareerBackground(props) {
                 duration: 3000,
                 useNativeDriver: false
             }
-        ).start(() => dispatch(showAnimal()));
+        ).start(() => {
+            dispatch(showAnimal())
+        });
     };
 
     const sendBusFromDog = () => {
@@ -104,86 +122,91 @@ function CareerBackground(props) {
         );
     };
 
-    const dispatchShift = async (shiftType) => {
-        let date = new Date();
-        let time = date.getTime();
-        fadeOut();
-        sendBusToDog();
-        setTimeout(() => sendBusToWork(startShiftCountdown), 3000);
-        await updateStartedShift(time, shiftType);
-        await dispatch(startShift(time, shiftType));
-    };
-
     const returnFromShift = async () => {
         sendBusFromWork();
         setTimeout(sendBusFromDog, 3000)
+        reduxAndFirebaseAddCoins(dispatch, shiftType);
+
     };
 
-    const startShiftCountdown = async () => {
-        shiftDuration = calculateShiftTimeRemaining();
-        Animated.timing(
-            shiftTimeRemaining,
-            {
-                toValue: 0,
-                fromValue: shiftDuration,
-                duration: shiftDuration,
-                useNativeDriver: false
+
+    const dispatchShift = async (shiftType) => {
+
+        fadeOut();
+        sendBusToDog();
+        reduxAndFirebaseStartShift(dispatch, shiftType);
+        setTimeout(
+            () => {
+                sendBusToWork();
             }
-        ).start()
+            , 3000);
+
+
+    };
+
+    const formatShiftTimeRemaining = (seconds) => {
+        let date = new Date(seconds);
+
+        return (date.toLocaleTimeString());
     }
 
-    const calculateShiftTimeRemaining = () => {
+    const checkShiftEnd = () => {
 
-        let shiftDuration = 0;
         let date = new Date();
-        if (props.shiftType === "short") {
-            shiftDuration = 36000000;
-        }
-        else if (props.shiftType === "medium") {
-            shiftDuration = 3600000 * 4;
-        }
-        else if (props.shiftType === "long") {
-            shiftDuration = 3600000 * 8
+
+        if (date.getTime() > expectedShiftEnd) {
+            for (i = 0; i < timeouts.length; i++) {
+                clearTimeout(timeouts[i])
+            }
+            timeouts = []
+            returnFromShift();
         }
         else {
-            return 0;
+            timeouts.push(setTimeout(checkShiftEnd, 1000))
         }
-
-        if (!lastShiftStart) {
-            return 0;
-        }
-
-        return lastShiftStart + shiftDuration - date.getTime();
     }
 
     return (
         <View style={styles.pageContainer}>
-            <TouchableOpacity style={styles.busButton} onPress={fadeIn}>
-                <Animated.View style={{
-                    transform: [{ translateX: busX }]
-                }}>
-                    <Image style={styles.workBus} source={require('../../assets/workBus.png')}>
+            {!animalIsShown &&
+                <View style={styles.awayMessageContainer}>
+                    <View>
 
-                    </Image>
-                    <View style={styles.workIcon}>
-                        {careerInfo.icon}
+                        <Text style={styles.awayMessage}>Your dog is at work!</Text>
+                        <Text style={styles.awayMessage}> {"It will return at " +
+                            formatShiftTimeRemaining(expectedShiftEnd)}
+                        </Text>
                     </View>
-                </Animated.View>
-            </TouchableOpacity>
-            {
-                shiftTimeRemaining.value > 0 ?
-                    <Animated.Text>{shiftTimeRemaining.value}</Animated.Text>
-                    : <CareerWorkMenu
-                        sendBusToWork={sendBusToDog}
-                        fadeAnim={fadeAnim}
-                        fadeOut={fadeOut}
-                        showShiftOptions={showShiftOptions}
-                        setShowShiftOptions={setShowShiftOptions}
-                        setShowCareerSelection={props.setShowCareerSelection}
-                        startShiftCountdown={startShiftCountdown}
-                        sendBusToDog={sendBusToDog}
-                        sendBusToWork={sendBusToWork}
-                    />}
+                    <TouchableOpacity style={styles.reduceShiftButton} onPress={() => reduxAndFirebaseReduceShift(dispatch, expectedShiftEnd)}>
+                        <Text style={styles.reduceShiftButtonText}>Reduce Shift</Text>
+                    </TouchableOpacity>
+                </View>}
+
+            <>
+                <TouchableOpacity style={styles.busButton} onPress={fadeIn}>
+                    <Animated.View style={{
+                        transform: [{ translateX: busX }]
+                    }}>
+
+                        <Image style={styles.workBus} source={require('../../assets/workBus.png')}>
+
+                        </Image>
+                        <View style={styles.workIcon}>
+                            {careerInfo.icon}
+                        </View>
+                    </Animated.View>
+                </TouchableOpacity>
+                <CareerWorkMenu
+                    fadeOut={fadeOut}
+                    fadeAnim={fadeAnim}
+                    showShiftOptions={showShiftOptions}
+                    setShowShiftOptions={setShowShiftOptions}
+                    setShowCareerSelection={props.setShowCareerSelection}
+                    dispatchShift={dispatchShift}
+                />
+            </>
+
+
 
         </View>
     )
@@ -191,7 +214,10 @@ function CareerBackground(props) {
 
 export default function CareerScreen(props) {
 
-    const [showCareerSelection, setShowCareerSelection] = useState(true);
+    const careerId = useSelector(state => state.career.career.id)
+
+    const [showCareerSelection, setShowCareerSelection] = useState(careerId === null);
+
 
     return (
         <OverlayContainer front={
@@ -207,12 +233,12 @@ const styles = StyleSheet.create(
         pageContainer: {
             width: width,
             height: height,
-            justifyContent: 'flex-end',
+            justifyContent: 'center',
             alignItems: 'center',
             position: 'relative',
         },
         workBus: {
-            resizeMode: 'center',
+            resizeMode: 'contain',
             width: width,
             height: WORK_BUS_HEIGHT,
             position: 'absolute',
@@ -263,6 +289,39 @@ const styles = StyleSheet.create(
             position: "absolute",
             top: WORK_BUS_HEIGHT * .55,
             left: WINDOW_WIDTH * .6
+        },
+        awayMessage: {
+            fontSize: 30,
+            textAlign: "center",
+            fontFamily: 'Didot-Italic',
+            color: "#998200"
+        },
+        awayMessageContainer: {
+            alignItems: "center",
+            justifyContent: "space-evenly",
+            backgroundColor: '#FFFDD0',
+            borderColor: "gold",
+            borderWidth: 3,
+            borderRadius: 5,
+            width: WINDOW_WIDTH,
+            height: WORK_BUS_HEIGHT,
+            position: 'absolute',
+            bottom: WORK_BUS_MARGIN_BOTTOM,
+            zIndex: 3
+        },
+        reduceShiftButton: {
+            width: "auto",
+            height: "auto",
+            padding: "5%",
+            justifyContent: "center",
+            alignItems: "center",
+            borderRadius: 5,
+            backgroundColor: "gold"
+        },
+        reduceShiftButtonText: {
+            fontFamily: 'Didot-Italic',
+            fontSize: 20,
+
         }
 
     }

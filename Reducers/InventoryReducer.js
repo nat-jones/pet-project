@@ -24,7 +24,6 @@ const InventoryReducer = (state = defaultInventory, action) => {
       return newState;
 
     case "ADD_CARTLOAD":
-
       Object.keys(action.value).reduce(
         (acc, e) => {
           acc[e] += action.value[e];

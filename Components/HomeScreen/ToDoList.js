@@ -10,6 +10,7 @@ export default function ToDoList({ setShowToDoList, showToDoList }) {
 
     const hungerInfo = useSelector(state => state.hunger);
     const exerciseInfo = useSelector(state => state.exercise);
+    const cleanlinessInfo = useSelector(state => state.cleanliness);
     return (
         <Modal animationType="fade" transparent="true" visible={showToDoList}>
             <View style={styles.modalContainer}>
@@ -39,13 +40,13 @@ export default function ToDoList({ setShowToDoList, showToDoList }) {
                     />
                     <ToDoLineItem
                         lineName="Cleanliness"
-                        lineImage={require("../../assets/ToDoFood.png")}
-                        checkedImage={require("../../assets/CheckedToDoFood.png")}
-                        lastCared={hungerInfo.lastFed}
-                        timesCaredToday={hungerInfo.timesFedToday}
-                        didMiscare={hungerInfo.didMisfeed}
-                        checkTimeSince={hungerInfo.checkTimeSince}
-                        imgArr={[1, 2]}
+                        lineImage={require("../../assets/ToDoSoap.png")}
+                        checkedImage={require("../../assets/CheckedToDoSoap.png")}
+                        lastCared={cleanlinessInfo.lastCleaned}
+                        timesCaredToday={cleanlinessInfo.timesCleanedToday}
+                        didMiscare={cleanlinessInfo.didMisclean}
+                        checkTimeSince={cleanlinessInfo.checkTimeSince}
+                        imgArr={[1]}
                     />
                     <ToDoLineItem
                         lineName="Intelligence"

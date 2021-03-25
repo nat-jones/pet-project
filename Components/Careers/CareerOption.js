@@ -23,14 +23,19 @@ export default function CareerOption(props) {
     const [showModal, setShowModal] = useState(false);
     const dispatch = useDispatch();
     const [showUserStars, setShowUserStars] = useState(false);
-    const [starVals, setStarVals] = useState(
-        {
-            love: 0,
-            hunger: 0,
-            cleanliness: 0,
-            exercise: 0
-        }
-    );
+    const hungerStars = useSelector(state => state.hunger.hungerStars);
+    const exerciseStars = useSelector(state => state.exercise.exerciseStars);
+    const cleanlinessStars = useSelector(state => state.cleanliness.cleanlinessStars);
+    const starVals =
+    {
+        love: 0,
+        hunger: hungerStars,
+        cleanliness: cleanlinessStars,
+        exercise: exerciseStars,
+        intelligence: 0
+    };
+
+
 
     return (
         <View style={[styles.optionWrapper, { backgroundColor: props.primaryColor }]}>
@@ -48,7 +53,7 @@ export default function CareerOption(props) {
                     {Object.keys(props.barVals).map(
                         (e) => {
                             let icons = new Array(
-                                showUserStars ? checkStarLevel(starVals[e]) : props.barVals[e]
+                                showUserStars ? starVals[e] : props.barVals[e]
                             ).fill(
                                 <Icon
                                     type='FontAwesome'

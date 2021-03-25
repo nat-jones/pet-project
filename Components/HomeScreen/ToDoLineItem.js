@@ -16,7 +16,6 @@ export default function ToDoLineItem({
 
     let date = new Date();
     let imgWidth = TODO_LIST_WIDTH / (2 * imgArr.length);
-    console.log(checkTimeSince)
     return (
         <View style={styles.line}>
             <Text style={styles.lineText}>{lineName + ":"}</Text>

@@ -40,11 +40,16 @@ export default function TestLoadingScreen(props) {
         require("../../assets/hollywoodDog.jpg"),
         require("../../assets/detectionDog.jpg"),
         require("../../assets/discountFood.png"),
-        require("../../assets/sierraShampoo.png"),
+        require("../../assets/sierrasShampoo.png"),
         require("../../assets/GoldenRetriever.png"),
         require("../../assets/GoldenRetrieverSad.png"),
         require("../../assets/ToDoFood.png"),
-        require("../../assets/CheckedToDoFood.png")
+        require("../../assets/CheckedToDoFood.png"),
+        require("../../assets/poochPerfume.png"),
+        require("../../assets/bowWow.png"),
+        require("../../assets/dozersDisc.png"),
+        require("../../assets/whiskerAway.png"),
+        require("../../assets/workBus.png")
 
       ]);
       await setDidLoad(true);

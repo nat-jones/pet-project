@@ -13,18 +13,20 @@ import {
     SUMMARY_HEIGHT
 } from '../../layoutConsts';
 import { SHOP_ITEM_INFO } from '../../shopItemInfo';
-import { useAccumulator } from '../../Actions/AccumulatorActions';
+import { useCoins } from '../../Actions/CoinActions';
 import SummaryLineItem from './SummaryLineItem';
 import { addCartload } from '../../Actions/InventoryActions';
 import { purchaseInventory } from '../../Backend/firebase';
 import { clearCart } from '../../Actions/ShopActions';
+import { reduxAndFirebasePurchaseCart } from '../../ReduxBackendWrappers';
 
 
 export default function CheckoutModal(props) {
 
 
     const shoppingCart = useSelector(state => state.cart);
-    const coins = useSelector(state => state.accumulators.coins);
+    const inventory = useSelector(state => state.inventory);
+    const coins = useSelector(state => state.coins);
     const dispatch = useDispatch();
 
     const getItemsInCart = () => {
@@ -45,7 +47,6 @@ export default function CheckoutModal(props) {
         let cartCost = items.reduce(
             (acc, e) => {
                 acc += (shoppingCart[e] * SHOP_ITEM_INFO[e].price);
-                console.lof
                 return acc;
             }, 0
         )
@@ -58,10 +59,7 @@ export default function CheckoutModal(props) {
         let cartCost = getCartCost();
 
         if (coins >= cartCost) {
-            await dispatch(useAccumulator(cartCost, 'coins'));
-            await dispatch(addCartload(shoppingCart));
-            await purchaseInventory(cartCost);
-            await dispatch(clearCart());
+            await reduxAndFirebasePurchaseCart(dispatch, inventory, shoppingCart, cartCost, coins)
             props.closeModal();
         }
 

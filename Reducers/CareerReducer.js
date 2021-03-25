@@ -1,6 +1,11 @@
-const CareerReducer = (state = { career: null, lastShiftStart: null, lastShiftType: null }, action) => {
+const CareerReducer = (state = { career: null, expectedShiftEnd: null, lastShiftType: null }, action) => {
 
-    newState = { ...state };
+    let newState = {
+        career: { ...state.career },
+        expectedShiftEnd: state.expectedShiftEnd,
+        lastShiftType: state.lastShiftType
+    };
+
     switch (action.type) {
 
         case 'SET_CAREER':
@@ -11,14 +16,23 @@ const CareerReducer = (state = { career: null, lastShiftStart: null, lastShiftTy
 
         case 'START_SHIFT':
 
-            return { ...state, lastShiftStart: action.lastShiftStart, lastShiftType: action.lastShiftType };
+            newState.expectedShiftEnd = action.expectedShiftEnd;
+            newState.lastShiftType = action.lastShiftType;
+
+            return newState;
 
         case 'SET_ALL_CAREER_INFO':
             return { ...action.value }
 
-        default:
+        case 'REDUCE_SHIFT':
 
-            return state;
+            newState.expectedShiftEnd = state.expectedShiftEnd - 1800000;
+
+        default:
+            // console.log("default");
+
+
+            return newState;
     }
 }
 

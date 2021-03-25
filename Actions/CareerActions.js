@@ -12,7 +12,7 @@ export const setCareer = (careerID) => {
 export const startShift = (time, shiftType) => {
     return {
         type: 'START_SHIFT',
-        lastShiftStart: time,
+        expectedShiftEnd: time,
         lastShiftType: shiftType
     };
 };
@@ -20,7 +20,14 @@ export const startShift = (time, shiftType) => {
 export const setAllCareerInfo = (value) => {
     return {
         type: 'SET_ALL_CAREER_INFO',
-        value: { career: { ...CAREER_INFO[value.careerID] }, lastShiftStart: value.lastShiftStart, lastShiftType: value.lastShiftType }
+        value: { career: { ...CAREER_INFO[value.career] }, expectedShiftEnd: value.expectedShiftEnd, lastShiftType: value.lastShiftType }
+    }
+}
+
+export const reduceShift = () => {
+
+    return {
+        type: "REDUCE_SHIFT"
     }
 }
 

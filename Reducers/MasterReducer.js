@@ -1,5 +1,5 @@
 import LoginReducer from "./LoginReducer";
-import AccumulatorReducer from "./AccumulatorReducer";
+import CoinReducer from "./CoinReducer";
 import InventoryReducer from "./InventoryReducer";
 import AnimalLocationReducer from './AnimalLocationReducer';
 import { combineReducers } from "redux";
@@ -10,10 +10,12 @@ import CareerReducer from "./CareerReducer";
 import HungerReducer from "./HungerReducer";
 import ExerciseReducer from "./ExerciseReducer";
 import CleanlinessReducer from "./CleanlinessReducer";
+import LoveReducer from "./LoveReducer";
+import IntelligenceReducer from "./IntelligenceReducer";
 
 const MasterReducer = combineReducers({
   userID: LoginReducer,
-  accumulators: AccumulatorReducer,
+  coins: CoinReducer,
   inventory: InventoryReducer,
   animalLocation: AnimalLocationReducer,
   drag: DragReducer,
@@ -22,7 +24,9 @@ const MasterReducer = combineReducers({
   career: CareerReducer,
   hunger: HungerReducer,
   exercise: ExerciseReducer,
-  cleanliness: CleanlinessReducer
+  cleanliness: CleanlinessReducer,
+  love: LoveReducer,
+  intelligence: IntelligenceReducer
 });
 
 export default MasterReducer;

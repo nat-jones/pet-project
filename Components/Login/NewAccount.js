@@ -4,7 +4,7 @@ import ForestBackground from "../Backgrounds/ForestBackground";
 import { Actions } from "react-native-router-flux";
 import { Item, Input, Button, Text } from "native-base";
 import { useDispatch } from "react-redux";
-import { setAllAccumulators } from "../../Actions/AccumulatorActions";
+import { setCoins } from "../../Actions/CoinActions";
 import { setItem } from "../../Actions/InventoryActions";
 import { login } from "../../Actions/LoginActions";
 import { createNewAccountWithUsernameAndPassword, setNewUserData, getUserData, firebase } from "../../Backend/firebase";
@@ -31,13 +31,7 @@ export default function NewAccount(props) {
   const unsubscribe = firebase.auth().onAuthStateChanged(onAuthStateChanged);
 
   const dispatchUserData = async (data) => {
-    await dispatch(
-      setAllAccumulators({
-        coins: data.coins,
-        xp: data.xp,
-        gems: data.gems,
-      })
-    );
+    await dispatch(setCoins(data.coins));
     await dispatch(setItem('dogFood', data.food));
   };
 

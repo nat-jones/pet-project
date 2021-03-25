@@ -98,14 +98,24 @@ export const updateInventory = async () => {
     .update(inventory);
 }
 
-export const purchaseInventory = async (cartCost) => {
+export const useInventory = async (inventory, itemID) => {
+  let uid = Store.getState().userID;
+  console.log(inventory);
+  let newValue = inventory[itemID] - 1;
+  let update = {};
+  update[itemID] = newValue;
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(update);
+}
+
+
+export const purchaseInventory = async (cartCost, inventory, coins) => {
 
   let uid = Store.getState().userID;
-  let inventory = Store.getState().inventory;
-  let coins = Store.getState().accumulators.coins;
-
   let newCoins = coins - cartCost;
-  let update = { ...inventory, coins: coins };
+  let update = { ...inventory, coins: newCoins };
   await db
     .collection('Users')
     .doc(uid)
@@ -174,10 +184,10 @@ export const updateSponsoredAnimal = async (animalID) => {
     .update(updateObject);
 }
 
-export const updateStartedShift = async (shiftStart, shiftType) => {
+export const updateStartedShift = async (shiftEnd, shiftType) => {
   let uid = Store.getState().userID;
   let updateObject = {
-    lastShiftStart: shiftStart,
+    expectedShiftEnd: shiftEnd,
     lastShiftType: shiftType
   }
   await db
@@ -185,6 +195,18 @@ export const updateStartedShift = async (shiftStart, shiftType) => {
     .doc(uid)
     .update(updateObject);
 }
+
+export const firebaseReduceShift = async (shiftEnd) => {
+  let uid = Store.getState().userID;
+  let updateObject = {
+    expectedShiftEnd: shiftEnd - 1800000
+  }
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
 
 export const feedAnimalBackend = async (data) => {
 
@@ -279,6 +301,19 @@ export const cleanPetBackend = async ({ lastCleaned, didMisclean, timesCleanedTo
     lastCleaned: lastCleaned,
     timesCleanedToday: timesCleanedToday,
     didMisclean: didMisclean
+  }
+
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const checkIn = async (date) => {
+
+  let uid = Store.getState().userID;
+  let updateObject = {
+    lastCheckIn: date
   }
 
   await db

@@ -1,10 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
 import { Icon } from 'native-base';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { WINDOW_WIDTH, WORK_BUS_HEIGHT, WORK_BUS_MARGIN_BOTTOM } from '../../layoutConsts';
-import { startShift } from '../../Actions/CareerActions';
-import { updateStartedShift } from '../../Backend/firebase';
+
 
 
 
@@ -13,16 +12,11 @@ export default function CareerWorkMenu(props) {
     const dispatch = useDispatch();
     const [menuState, setMenuState] = useState('Main')
 
-    const dispatchShift = async (shiftType) => {
-        let date = new Date();
-        let time = date.getTime();
-        props.fadeOut();
-        setMenuState('Main')
-        props.sendBusToDog();
-        setTimeout(() => props.sendBusToWork(props.startShiftCountdown), 3000);
-        await updateStartedShift(time, shiftType);
-        await dispatch(startShift(time, shiftType));
-    };
+    const dispatchShift = (shift) => {
+        props.dispatchShift(shift);
+        setMenuState('Main');
+
+    }
 
     const showMenu = () => {
         if (menuState == "Work") {

@@ -1,3 +1,4 @@
+import Store from './store';
 import { setHungerInfo, feedPet } from './Actions/HungerActions';
 import { setExerciseInfo, exercisePet } from './Actions/ExerciseActions';
 import { setCleanlinessInfo, cleanPet } from './Actions/CleanlinessActions';
@@ -7,8 +8,15 @@ import {
     refreshCleanlinessInfoBackend,
     feedPetBackend,
     exercisePetBackend,
-    cleanPetBackend
+    cleanPetBackend,
+    updateStartedShift,
+    firebaseReduceShift,
+    purchaseInventory
 } from './Backend/firebase';
+import { reduceShift, startShift } from './Actions/CareerActions';
+import { addCoins, useCoins } from './Actions/CoinActions';
+import { setInventory } from './Actions/InventoryActions';
+import { clearCart } from './Actions/ShopActions';
 
 
 export const reduxAndFirebaseSetHunger = async (dispatch,
@@ -19,7 +27,9 @@ export const reduxAndFirebaseSetHunger = async (dispatch,
         lastCheckIn,
         didMisfeed,
         time }) => {
-    let ds = daysSince(time, lastCheckIn);
+
+    let ds = xdaysSince(time, lastCheckIn);
+
     if (ds >= 1) {
         let hungerData = {
             timesFedToday: 0,
@@ -66,7 +76,8 @@ export const reduxAndFirebaseSetExercise = async (dispatch, {
     didMisexercise,
     time
 }) => {
-    let ds = daysSince(time, lastCheckIn)
+
+    let ds = xdaysSince(time, lastCheckIn);
     if (ds >= 1) {
         let exerciseData = {
             timesExercisedToday: 0,
@@ -114,7 +125,7 @@ export const reduxAndFirebaseSetCleanliness = async (dispatch, {
     didMisclean,
     time
 }) => {
-    let ds = daysSince(time, lastCheckIn)
+    let ds = xdaysSince(time, lastCheckIn)
     if (ds >= 1) {
         let cleanlinessData = {
             timesCleanedToday: 0,
@@ -208,7 +219,117 @@ export const reduxAndFirebaseCleanPet = async (dispatch,
 
 }
 
-const daysSince = (date1, date2) => (Math.ceil(Math.abs(date1 - date2) / (1000 * 60 * 60 * 24)));
+const daysSince = (date1, date2) => {
+
+    return Math.floor(Math.abs(date1 - date2) / (1000 * 60 * 60 * 24))
+
+}
 const hoursSince = (date1, date2) => (Math.abs(date1 - date2) / 1000 / 60 / 60);
 const checkDaysSince = (lastCared, curTime, threshold) => (daysSince(lastCared, curTime) >= threshold);
 const checkHoursSince = (lastCared, curTime, threshold) => (hoursSince(curTime, lastCared) >= threshold);
+const xdaysSince = (date1, date2) => {
+
+    let days1 = Math.floor((date1.getTime() - 14400000) / 86400000);
+
+    let days2 = Math.floor((date2.getTime() - 14400000) / 86400000);
+
+
+    return Math.abs(days1 - days2);
+}
+
+export const reduxAndFirebaseStartShift = async (dispatch, shiftType) => {
+
+    let expectedEnd = new Date();
+    let hourInc = 0
+    switch (shiftType) {
+
+        case ("short"):
+
+            hourInc = 1;
+            break;
+
+        case ("medium"):
+
+            hourInc = 4;
+            break;
+
+        case ("long"):
+
+            hourInc = 8;
+            break;
+
+        default:
+            hourInc = 0;
+    }
+    expectedEnd.setHours(expectedEnd.getHours() + hourInc)
+    dispatch(startShift(expectedEnd.getTime(), shiftType));
+    await updateStartedShift(expectedEnd.getTime(), shiftType);
+}
+
+export const reduxAndFirebaseReduceShift = async (dispatch, expectedEnd) => {
+
+    let thirtyMins = 1800000;
+
+    dispatch(reduceShift());
+    await firebaseReduceShift(expectedEnd);
+}
+
+export const reduxAndFirebaseAddCoins = async (dispatch, lastShiftType) => {
+
+    let data = Store.getState()
+    let coins = data.coins;
+    let careerBarVals = data.career.career.barVals;
+    let petBarVals = {}
+    petBarVals.hunger = data.hunger.hungerStars;
+    petBarVals.cleanliness = data.cleanliness.cleanlinessStars;
+    petBarVals.exercise = data.exercise.exerciseStars;
+    petBarVals.love = data.love.loveStars;
+    petBarVals.intelligence = data.intelligence.intelligenceStars;
+    let stars = Object.keys(careerBarVals).reduce(
+        (acc, e) => {
+            acc += petBarVals[e] < careerBarVals[e] ? petBarVals[e] : careerBarVals[e];
+            return acc;
+        }, 0
+    )
+    let payment = 0;
+    switch (lastShiftType) {
+
+        case ("short"):
+
+            payment = 25 + 10 * stars;
+            break;
+
+        case ("medium"):
+
+            payment = 125 + 40 * stars;
+            break;
+
+        case ("long"):
+
+            payment = 300 + 80 * stars;
+            break;
+    }
+
+    dispatch(addCoins(payment, "coins"));
+}
+
+export const reduxAndFirebasePurchaseCart = async (dispatch, inventory, shoppingCart, cartCost, coins) => {
+
+    let newInventory = addCartload(shoppingCart, inventory);
+
+    dispatch(setInventory(newInventory));
+    dispatch(useCoins(cartCost));
+    dispatch(clearCart());
+    await purchaseInventory(cartCost, newInventory, coins);
+
+}
+
+const addCartload = (cartLoad, inventory) => {
+
+    return Object.keys(cartLoad).reduce(
+        (acc, e) => {
+            acc[e] += cartLoad[e];
+            return acc;
+        }, inventory
+    );
+}
