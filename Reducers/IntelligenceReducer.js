@@ -1,8 +1,17 @@
 export default function IntelligenceReducer(state = {
-    intelligenceStars: 3
+    intelligenceStars: null,
+    timesTrainedToday: null
 }, action) {
 
-    switch (action.value) {
+    switch (action.type) {
+
+        case ("SET_INTELLIGENCE_INFO"):
+            return action.value
+
+        case ("TRAIN"):
+            let newState = { ...state, timesTrainedToday: state.timesTrainedToday + 1 }
+            console.log(newState);
+            return newState
 
         default:
             return state;

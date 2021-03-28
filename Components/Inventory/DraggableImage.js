@@ -12,9 +12,6 @@ export default function DraggableImage(props) {
     const offset = useSelector(state => state.drag.location);
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
-
-
-
     if (dragItem !== null) {
 
         return (
@@ -29,7 +26,7 @@ export default function DraggableImage(props) {
                 }}
             >
                 <Image
-                    style={[{ top: offset.y + INVENTORY_POSITION_TOP, left: offset.x + INVENTORY_CARET_WIDTH }, styles.image]}
+                    style={[{ top: offset.y, left: offset.x }, styles.image]}
                     source={dragItem.imageSrc}
                     resizeMode="contain"
                 />

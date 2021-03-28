@@ -1,10 +1,12 @@
 import { enableScroll } from './Actions/DragActions';
 import { useItem } from './Actions/InventoryActions';
+import { learn } from './Actions/TrainingActions';
 import { updateBars, useInventory } from './Backend/firebase';
 import {
     reduxAndFirebaseFeedPet,
     reduxAndFirebaseExercisePet,
-    reduxAndFirebaseCleanPet
+    reduxAndFirebaseCleanPet,
+    reduxAndFirebaseLearn
 } from './ReduxBackendWrappers';
 import Store from './store';
 
@@ -105,8 +107,9 @@ export const SHOP_ITEM_INFO = {
         price: 50,
         imageSrc: require('./assets/apple.png'),
         displayString: 'Apple Slices',
-        onUse: async (dispatch) => {
-            await onCleanerUse(dispatch, 1, 'apple')
+        onUse: async (dispatch, trainingData, command, attempt, outcome) => {
+            reduxAndFirebaseLearn(dispatch, trainingData, command, attempt, outcome);
+
         }
     },
     milkBone: {

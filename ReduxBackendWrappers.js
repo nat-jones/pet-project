@@ -11,12 +11,16 @@ import {
     cleanPetBackend,
     updateStartedShift,
     firebaseReduceShift,
-    purchaseInventory
+    purchaseInventory,
+    firebaseLearn
 } from './Backend/firebase';
 import { reduceShift, startShift } from './Actions/CareerActions';
 import { addCoins, useCoins } from './Actions/CoinActions';
 import { setInventory } from './Actions/InventoryActions';
 import { clearCart } from './Actions/ShopActions';
+import { learn, setTrainingData } from './Actions/TrainingActions';
+import { TRICK_DEFAULTS } from './TrickConsts';
+import { train } from './Actions/IntelligenceActions';
 
 
 export const reduxAndFirebaseSetHunger = async (dispatch,
@@ -321,6 +325,23 @@ export const reduxAndFirebasePurchaseCart = async (dispatch, inventory, shopping
     dispatch(useCoins(cartCost));
     dispatch(clearCart());
     await purchaseInventory(cartCost, newInventory, coins);
+
+}
+
+export const reduxAndFirebaseLearn = async (dispatch, trainingData, command, attempt, outcome) => {
+
+    trainingData = { ...trainingData };
+    if (!(command in trainingData)) {
+        trainingData[command] = { ...TRICK_DEFAULTS };
+    }
+
+    trainingData[command][attempt] += outcome ? .25 : -.25;
+    if (trainingData[command][attempt] < 1) {
+        return;
+    }
+    dispatch(train())
+    dispatch(setTrainingData(trainingData));
+    await firebaseLearn(trainingData);
 
 }
 

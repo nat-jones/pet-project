@@ -59,6 +59,7 @@ export default function InventoryDropDown(props) {
               let inventoryItem = { ...SHOP_ITEM_INFO[e] }
               inventoryItem.value = inventory[inventoryItem.id];
               inventoryItem['key'] = inventoryItem.id;
+              inventoryItem.menu = "Inventory"
               return <InventoryImage {...inventoryItem} />
             }
           )}

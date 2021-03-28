@@ -100,7 +100,6 @@ export const updateInventory = async () => {
 
 export const useInventory = async (inventory, itemID) => {
   let uid = Store.getState().userID;
-  console.log(inventory);
   let newValue = inventory[itemID] - 1;
   let update = {};
   update[itemID] = newValue;
@@ -314,6 +313,19 @@ export const checkIn = async (date) => {
   let uid = Store.getState().userID;
   let updateObject = {
     lastCheckIn: date
+  }
+
+  await db
+    .collection('Users')
+    .doc(uid)
+    .update(updateObject);
+}
+
+export const firebaseLearn = async (trainingData) => {
+
+  let uid = Store.getState().userID;
+  let updateObject = {
+    trainingData: trainingData
   }
 
   await db

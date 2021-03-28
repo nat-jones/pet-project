@@ -9,6 +9,8 @@ import { ANIMAL_POSITION_BOTTOM, ANIMAL_HEIGHT, width, height, INVENTORY_POSITIO
 import { Icon } from 'native-base';
 import DraggableImage from "../Inventory/DraggableImage";
 import ToDoList from './ToDoList';
+import TrainingInput from "./TrainingInput";
+import TrainingGuess from "./TrainingGuess";
 
 function HomeScreenBackground(props) {
 
@@ -17,8 +19,23 @@ function HomeScreenBackground(props) {
   const dispatch = useDispatch();
   const showAnimal = useSelector(state => state.animalLocation.show);
   const [showToDoList, setShowToDoList] = useState(false);
+  const hungerInfo = useSelector(state => state.hunger);
+  const cleanlinessInfo = useSelector(state => state.cleanliness);
+  const exerciseInfo = useSelector(state => state.exercise);
+  const intelligenceInfo = useSelector(state => state.intelligence);
+
+  const isHappy = () => {
+
+    let happy = true;
+    let date = new Date()
+    happy = happy && !(hungerInfo.checkTimeSince(date, hungerInfo.lastFed) && hungerInfo.timesFedToday < 2);
+    happy = happy && !(exerciseInfo.checkTimeSince(date, exerciseInfo.lastExercised) && exerciseInfo.timesExercisedToday < 3);
+    happy = happy && !(cleanlinessInfo.checkTimeSince(date, cleanlinessInfo.lastCleaned) && cleanlinessInfo.timesCleanedToday < 1);
+    happy = happy && intelligenceInfo.timesTrainedToday >= 5;
 
 
+    return happy;
+  }
 
   return (
 
@@ -39,7 +56,9 @@ function HomeScreenBackground(props) {
         }}
       >
         <Image
-          source={require('../../assets/GoldenRetrieverSad.png')}
+          source={isHappy() ?
+            require('../../assets/GoldenRetriever.png') :
+            require('../../assets/GoldenRetrieverSad.png')}
           key={"animalImage"}
           style={[styles.animalImage, { opacity: (showAnimal ? 1 : .5) }]}
         />
@@ -48,7 +67,9 @@ function HomeScreenBackground(props) {
       <TouchableOpacity style={styles.toDoListButton} onPress={() => setShowToDoList(true)}>
         <Icon type="FontAwesome" name="pencil-square-o" style={styles.icon}></Icon>
       </TouchableOpacity>
+      <TrainingInput />
       <ToDoList setShowToDoList={setShowToDoList} showToDoList={showToDoList} />
+      <TrainingGuess />
       <StatusBar style="auto" />
 
     </View>

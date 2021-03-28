@@ -4,6 +4,7 @@ import { height, TODO_LIST_HEIGHT, TODO_LIST_POSTITION_TOP, TODO_LIST_WIDTH, wid
 import { Icon } from 'native-base'
 import ToDoLineItem from './ToDoLineItem';
 import { useSelector } from 'react-redux';
+import { setIntelligenceInfo } from '../../Actions/IntelligenceActions';
 
 
 export default function ToDoList({ setShowToDoList, showToDoList }) {
@@ -11,6 +12,7 @@ export default function ToDoList({ setShowToDoList, showToDoList }) {
     const hungerInfo = useSelector(state => state.hunger);
     const exerciseInfo = useSelector(state => state.exercise);
     const cleanlinessInfo = useSelector(state => state.cleanliness);
+    const intelligenceInfo = useSelector(state => state.intelligence);
     return (
         <Modal animationType="fade" transparent="true" visible={showToDoList}>
             <View style={styles.modalContainer}>
@@ -50,13 +52,13 @@ export default function ToDoList({ setShowToDoList, showToDoList }) {
                     />
                     <ToDoLineItem
                         lineName="Intelligence"
-                        lineImage={require("../../assets/ToDoFood.png")}
-                        checkedImage={require("../../assets/CheckedToDoFood.png")}
-                        lastCared={hungerInfo.lastFed}
-                        timesCaredToday={hungerInfo.timesFedToday}
-                        didMiscare={hungerInfo.didMisfeed}
-                        checkTimeSince={hungerInfo.checkTimeSince}
-                        imgArr={[1, 2]}
+                        lineImage={require("../../assets/ToDoIntelligence.png")}
+                        checkedImage={require("../../assets/CheckedToDoIntelligence.png")}
+                        lastCared={null}
+                        timesCaredToday={intelligenceInfo.timesTrainedToday}
+                        didMiscare={() => false}
+                        checkTimeSince={() => true}
+                        imgArr={[1, 2, 3, 4, 5]}
                     />
                     <TouchableOpacity style={styles.closeButton} onPress={() => setShowToDoList(false)}>
                         <Icon type='FontAwesome' name='close' style={styles.closeIcon} />

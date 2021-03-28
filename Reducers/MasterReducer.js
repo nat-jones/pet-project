@@ -12,6 +12,7 @@ import ExerciseReducer from "./ExerciseReducer";
 import CleanlinessReducer from "./CleanlinessReducer";
 import LoveReducer from "./LoveReducer";
 import IntelligenceReducer from "./IntelligenceReducer";
+import TrainingReducer from "./TrainingReducer";
 
 const MasterReducer = combineReducers({
   userID: LoginReducer,
@@ -26,7 +27,9 @@ const MasterReducer = combineReducers({
   exercise: ExerciseReducer,
   cleanliness: CleanlinessReducer,
   love: LoveReducer,
-  intelligence: IntelligenceReducer
+  intelligence: IntelligenceReducer,
+  training: TrainingReducer,
+
 });
 
 export default MasterReducer;

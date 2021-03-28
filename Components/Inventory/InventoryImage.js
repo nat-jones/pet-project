@@ -9,7 +9,15 @@ import {
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { clearDragItem, setDragItem } from '../../Actions/DragActions';
-import { INVENTORY_ITEM_MARGIN, INVENTORY_ITEM_WIDTH, INVENTORY_LIST_WIDTH } from "../../layoutConsts";
+import {
+  INVENTORY_CARET_WIDTH,
+  INVENTORY_ITEM_MARGIN,
+  INVENTORY_ITEM_WIDTH,
+  INVENTORY_LIST_WIDTH,
+  INVENTORY_POSITION_TOP,
+  TRAINING_INPUT_WINDOW_POSITION_TOP,
+  height
+} from "../../layoutConsts";
 
 
 const InventoryImage = (props) => {
@@ -17,14 +25,17 @@ const InventoryImage = (props) => {
   const pan = useRef(new Animated.ValueXY());
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const offsetRef = useRef(null);
+
   const dispatch = useDispatch();
   const [location, setLocation] = useState({ x: 0, y: 0 })
   const animalLocation = useSelector((store) => store.animalLocation);
+  const attempt = useSelector(state => state.training.guess);
+
 
   const fadeOut = () => {
     Animated.timing(fadeAnim, {
       toValue: 0,
-      duration: 1,
+      duration: 300,
       useNativeDriver: false,
     }).start(async () => {
       await props.onUse(dispatch);
@@ -35,6 +46,9 @@ const InventoryImage = (props) => {
   };
 
   const isInDropZone = (gestureState) => {
+    if (props.menu === "Training" && attempt === null) {
+      return false
+    }
     return (
       gestureState.moveX > animalLocation.left &&
       gestureState.moveX < animalLocation.right &&
@@ -73,12 +87,15 @@ const InventoryImage = (props) => {
 
   return (
     <View
-      style={styles.inventorySpace}
+      style={[styles.inventorySpace, { width: props.width ?? INVENTORY_ITEM_WIDTH, height: props.height ?? INVENTORY_ITEM_WIDTH }]}
       onLayout={(event) => {
         const layout = event.nativeEvent.layout;
+        let x = layout.x % INVENTORY_LIST_WIDTH + (props.menu === "Inventory" ? INVENTORY_CARET_WIDTH : 0)
+        let y = layout.y + 10 + (props.menu === "Inventory" ? INVENTORY_POSITION_TOP : TRAINING_INPUT_WINDOW_POSITION_TOP + height / 12)
+
         setLocation({
-          x: layout.x % INVENTORY_LIST_WIDTH,
-          y: layout.y
+          x: x,
+          y: y
         });
       }
       }

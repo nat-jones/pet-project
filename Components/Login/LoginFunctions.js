@@ -17,6 +17,7 @@ import {
     reduxAndFirebaseSetCleanliness
 } from '../../ReduxBackendWrappers';
 import { hideAnimal } from '../../Actions/AnimalLocationActions';
+import { setTrainingData } from '../../Actions/TrainingActions';
 const dispatch = Store.dispatch;
 
 export const dispatchUserData = async (data) => {
@@ -78,6 +79,8 @@ export const dispatchUserData = async (data) => {
         lastShiftType: data.lastShiftType
     }
     ));
+
+    await dispatch(setTrainingData(data.trainingData));
 
     checkOnShift(data.expectedShiftEnd) && dispatch(hideAnimal());
 };

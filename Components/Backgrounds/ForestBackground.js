@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { ImageBackground, StyleSheet, Dimensions } from "react-native";
 
-const forestImage = require("../../assets/homescreenBackground.jpg");
+const forestImage = require("../../assets/CabinBackground.png");
 const windowDims = Dimensions.get('window')
 
 export default function ForestBackground(props) {
