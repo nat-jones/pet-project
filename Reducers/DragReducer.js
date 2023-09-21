@@ -1,28 +1,28 @@
+const DragReducer = (
+  state = { scrollEnabled: true, dragItem: null, pan: null, location: {} },
+  action
+) => {
+  switch (action.type) {
+    case 'ENABLE_SCROLL':
+      return { ...state, scrollEnabled: true };
 
-const DragReducer = (state = { scrollEnabled: true, dragItem: null, pan: null, location: {} }, action) => {
+    case 'DISABLE_SCROLL':
+      return { ...state, scrollEnabled: false };
 
-    switch (action.type) {
+    case 'SET_DRAG_ITEM':
+      return {
+        scrollEnabled: false,
+        dragItem: action.item,
+        pan: action.pan,
+        location: action.location,
+      };
 
-        case 'ENABLE_SCROLL':
+    case 'CLEAR_DRAG_ITEM':
+      return { scrollEnabled: true, dragItem: null, pan: null, location: {} };
 
-            return { ...state, scrollEnabled: true };
-
-        case 'DISABLE_SCROLL':
-
-            return { ...state, scrollEnabled: false };
-
-        case 'SET_DRAG_ITEM':
-
-            return { scrollEnabled: false, dragItem: action.item, pan: action.pan, location: action.location }
-
-        case 'CLEAR_DRAG_ITEM':
-
-            return { scrollEnabled: true, dragItem: null, pan: null, location: {} }
-
-        default:
-
-            return state
-    }
+    default:
+      return state;
+  }
 };
 
 export default DragReducer;

@@ -1,4 +1,3 @@
-
 const date = new Date();
 
 export const NewUserSchema = {
@@ -12,6 +11,4 @@ export const NewUserSchema = {
   lastFed: date.getTime(),
   lastExercised: date.getTime(),
   lastLoved: date.getTime(),
-
-
 };

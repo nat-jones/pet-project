@@ -1,23 +1,21 @@
-
-const SponsorableAnimalReducer = (state = {
+const SponsorableAnimalReducer = (
+  state = {
     id: null,
     moneyRaised: 0,
-    allDogInfo: {}
-}, action) => {
+    allDogInfo: {},
+  },
+  action
+) => {
+  switch (action.type) {
+    case 'SPONSOR_ANIMAL':
+      return { ...state, id: action.value };
 
-    switch (action.type) {
+    case 'SET_ALL_DOG_INFO':
+      return { ...state, allDogInfo: { ...action.value } };
 
-        case 'SPONSOR_ANIMAL':
-            return { ...state, id: action.value };
-
-        case 'SET_ALL_DOG_INFO':
-
-            return { ...state, allDogInfo: { ...action.value } }
-
-        default:
-
-            return state;
-    }
-}
+    default:
+      return state;
+  }
+};
 
 export default SponsorableAnimalReducer;

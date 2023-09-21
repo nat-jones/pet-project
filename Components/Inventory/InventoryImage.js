@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
   Animated,
   View,
@@ -6,8 +6,8 @@ import {
   StyleSheet,
   PanResponder,
   Text,
-} from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+} from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { clearDragItem, setDragItem } from '../../Actions/DragActions';
 import {
   INVENTORY_CARET_WIDTH,
@@ -16,21 +16,18 @@ import {
   INVENTORY_LIST_WIDTH,
   INVENTORY_POSITION_TOP,
   TRAINING_INPUT_WINDOW_POSITION_TOP,
-  height
-} from "../../layoutConsts";
-
+  height,
+} from '../../layoutConsts';
 
 const InventoryImage = (props) => {
-
   const pan = useRef(new Animated.ValueXY());
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const offsetRef = useRef(null);
 
   const dispatch = useDispatch();
-  const [location, setLocation] = useState({ x: 0, y: 0 })
+  const [location, setLocation] = useState({ x: 0, y: 0 });
   const animalLocation = useSelector((store) => store.animalLocation);
-  const attempt = useSelector(state => state.training.guess);
-
+  const attempt = useSelector((state) => state.training.guess);
 
   const fadeOut = () => {
     Animated.timing(fadeAnim, {
@@ -46,8 +43,8 @@ const InventoryImage = (props) => {
   };
 
   const isInDropZone = (gestureState) => {
-    if (props.menu === "Training" && attempt === null) {
-      return false
+    if (props.menu === 'Training' && attempt === null) {
+      return false;
     }
     return (
       gestureState.moveX > animalLocation.left &&
@@ -61,7 +58,7 @@ const InventoryImage = (props) => {
     onStartShouldSetPanResponder: (evt, gestureState) => true,
     onPanResponderStart: function (e, gestureState) {
       if (props.value > 0) {
-        dispatch(setDragItem(props, pan, location))
+        dispatch(setDragItem(props, pan, location));
       }
     },
 
@@ -71,8 +68,11 @@ const InventoryImage = (props) => {
       }
     },
     onPanResponderRelease: (evt, gestureState) => {
-
-      if (isInDropZone(gestureState) && props.value > 0 && animalLocation.show) {
+      if (
+        isInDropZone(gestureState) &&
+        props.value > 0 &&
+        animalLocation.show
+      ) {
         fadeOut();
       } else {
         Animated.timing(pan.current, {
@@ -81,24 +81,35 @@ const InventoryImage = (props) => {
           useNativeDriver: false,
         }).start(() => dispatch(clearDragItem()));
       }
-
     },
   });
 
   return (
     <View
-      style={[styles.inventorySpace, { width: props.width ?? INVENTORY_ITEM_WIDTH, height: props.height ?? INVENTORY_ITEM_WIDTH }]}
+      style={[
+        styles.inventorySpace,
+        {
+          width: props.width ?? INVENTORY_ITEM_WIDTH,
+          height: props.height ?? INVENTORY_ITEM_WIDTH,
+        },
+      ]}
       onLayout={(event) => {
         const layout = event.nativeEvent.layout;
-        let x = layout.x % INVENTORY_LIST_WIDTH + (props.menu === "Inventory" ? INVENTORY_CARET_WIDTH : 0)
-        let y = layout.y + 10 + (props.menu === "Inventory" ? INVENTORY_POSITION_TOP : TRAINING_INPUT_WINDOW_POSITION_TOP + height / 12)
+        let x =
+          (layout.x % INVENTORY_LIST_WIDTH) +
+          (props.menu === 'Inventory' ? INVENTORY_CARET_WIDTH : 0);
+        let y =
+          layout.y +
+          10 +
+          (props.menu === 'Inventory'
+            ? INVENTORY_POSITION_TOP
+            : TRAINING_INPUT_WINDOW_POSITION_TOP + height / 12);
 
         setLocation({
           x: x,
-          y: y
+          y: y,
         });
-      }
-      }
+      }}
     >
       <Image
         style={[{ zIndex: 1 }, styles.image]}
@@ -107,17 +118,17 @@ const InventoryImage = (props) => {
       />
       <Animated.View
         style={{
-          transform: [{ translateX: pan.current.x }, { translateY: pan.current.y }],
+          transform: [
+            { translateX: pan.current.x },
+            { translateY: pan.current.y },
+          ],
           opacity: fadeAnim,
-          width: "100%",
-          height: "100%",
+          width: '100%',
+          height: '100%',
           zIndex: 3,
-
         }}
         {...panResponder.panHandlers}
-      >
-
-      </Animated.View>
+      ></Animated.View>
       <View style={styles.value}>
         <Text style={styles.text}>{props.value}</Text>
       </View>
@@ -126,41 +137,41 @@ const InventoryImage = (props) => {
 };
 const styles = StyleSheet.create({
   image: {
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
     zIndex: 3,
 
-    position: "absolute",
+    position: 'absolute',
   },
   inventorySpace: {
     width: INVENTORY_ITEM_WIDTH,
     height: INVENTORY_ITEM_WIDTH,
-    backgroundColor: "gray",
+    backgroundColor: 'gray',
     opacity: 1,
-    borderColor: "#5D5D5D",
+    borderColor: '#5D5D5D',
     borderWidth: 3,
     borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 2,
-    marginHorizontal: INVENTORY_ITEM_MARGIN
+    marginHorizontal: INVENTORY_ITEM_MARGIN,
   },
   value: {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 4,
     borderRadius: 50,
-    backgroundColor: "red",
+    backgroundColor: 'red',
     bottom: 0,
     right: 0,
     width: 20,
     height: 20,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    color: "white",
+    color: 'white',
     fontSize: 20,
-    alignContent: "center",
+    alignContent: 'center',
   },
 });
 
